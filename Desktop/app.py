@@ -6,6 +6,7 @@ from PyQt6.QtWidgets import QApplication, QFrame, QHBoxLayout
 from qfluentwidgets import (TeachingTip, PushButton, TeachingTipView, TeachingTipTailPosition, NavigationItemPosition, MessageBox, setTheme, Theme, MSFluentWindow,
                             NavigationAvatarWidget, qrouter, SubtitleLabel, setFont)
 from qfluentwidgets import FluentIcon as FIF
+from window.inicio import InterfazInicio
 
 
 class Widget(QFrame):
@@ -28,7 +29,7 @@ class VentanaPrincipal(MSFluentWindow):
         super().__init__()
 
         # Crear sub interfaces
-        self.InterfazInicio = Widget('Inicio', self)
+        self.InterfazInicio = InterfazInicio(self)
         self.InterfazCalendario = Widget('Calendario', self)
         self.InterfazDeberes = Widget('Actividades pendientes', self)
         self.InterfazCursos = Widget('Cursos', self)
@@ -58,7 +59,8 @@ class VentanaPrincipal(MSFluentWindow):
     def initWindow(self):
         self.resize(900, 700)
         self.setWindowIcon(QIcon('assets/uc.png'))
-        self.setWindowTitle('PUCalendar     N° Alumno: 12345678     Período: 1-2024')
+        self.setWindowTitle('PUCalendar')
+        
 
         desktop = QApplication.screens()[0].availableGeometry()
         w, h = desktop.width(), desktop.height()
