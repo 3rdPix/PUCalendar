@@ -1,39 +1,58 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QFrame, QHBoxLayout
-from PyQt6.QtGui import QPaintEvent, QPixmap, QPainter, QLinearGradient, QColor, QBrush, QPainterPath
+from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QFrame, QHBoxLayout, QGridLayout
+from PyQt6.QtGui import QPaintEvent, QPixmap, QPainter, QLinearGradient, QColor, QBrush, QPainterPath, QResizeEvent
 from PyQt6.QtCore import Qt, QRectF
-from qfluentwidgets import isDarkTheme, ScrollArea, FlowLayout, SubtitleLabel
-
+from qfluentwidgets import isDarkTheme, ScrollArea, FlowLayout, SubtitleLabel, SmoothScrollArea
+from components.summary_box import InfoBox
 
 
 class InterfazInicio(QFrame):
     """Contenedor superior"""
 
     def __init__(self, parent=None):
-        super().__init__(parent)
-        self.setObjectName('contenedor')
+        super().__init__(parent=parent)
+        self.setObjectName('Inicio')
 
-        area = ScrollArea(self)
-        area_layout = FlowLayout(area, True)
+        self.init_contenido()
+        inner_layout = FlowLayout(needAni=True)
+        inner_layout.addWidget(self.iBAgenda)
+        inner_layout.addWidget(self.iBCursos)
+        inner_layout.addWidget(self.iBPeligro)
+        inner_layout.addWidget(self.iBConfiguraciones)
 
-        # self.caja1 = CajaResumen('Resumen de pruebas')
-        # self.caja2 = CajaResumen('Resumen tareas pendientes')
-        # self.caja3 = CajaResumen('Notas pendientes')
-        # self.caja4 = CajaResumen('Ramos en peligro')
-
-        # layout.addWidget(self.caja1)
-        # layout.addWidget(self.caja2)
-        # layout.addWidget(self.caja3)
-        # layout.addWidget(self.caja4)
-
-        frame_layout = QHBoxLayout(self)
-        frame_layout.addWidget(area)
-
-class CajaResumen(QFrame):
-    """Caja con resumen de algún área"""
-
-
-    def __init__(self, text: str, parent=None) -> None:
-        super().__init__(parent)
-        self.labelPrueba = SubtitleLabel(text, self)
-        self.labelPrueba.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        # test
+        inner_layout.addWidget(self.iba)
+        inner_layout.addWidget(self.ibb)
+        inner_layout.addWidget(self.ibc)
+        inner_layout.addWidget(self.ibd)
+        inner_layout.addWidget(self.ibe)
+        inner_layout.addWidget(self.ibf)
+        inner_layout.addWidget(self.ibg)
+        inner_layout.addWidget(self.ibh)
         
+
+        self.area = ScrollArea(self)
+        self.transition = QWidget()
+        self.area.setWidget(self.transition)
+        self.area.setWidgetResizable(True)
+        self.transition.setLayout(inner_layout)
+
+        contenedor = QGridLayout()
+        contenedor.addWidget(self.transition)
+        self.setLayout(contenedor)
+
+
+    def init_contenido(self) -> None:
+        self.iBAgenda           = InfoBox('Próximas actividades')
+        self.iBCursos           = InfoBox('Progreso ramos')
+        self.iBPeligro          = InfoBox('Ramos en peligro')
+        self.iBConfiguraciones  = InfoBox('Configuraciones')
+
+        # test
+        self.iba = InfoBox('algo')
+        self.ibb = InfoBox('B')
+        self.ibc = InfoBox('C')
+        self.ibd = InfoBox('D')
+        self.ibe = InfoBox('E')
+        self.ibf = InfoBox('F')
+        self.ibg = InfoBox('G')
+        self.ibh = InfoBox('H')

@@ -29,7 +29,7 @@ class VentanaPrincipal(MSFluentWindow):
         super().__init__()
 
         # Crear sub interfaces
-        self.InterfazInicio = InterfazInicio(self)
+        self.InterfazInicio = InterfazInicio(parent=self)
         self.InterfazCalendario = Widget('Calendario', self)
         self.InterfazDeberes = Widget('Actividades pendientes', self)
         self.InterfazCursos = Widget('Cursos', self)
@@ -65,6 +65,9 @@ class VentanaPrincipal(MSFluentWindow):
         desktop = QApplication.screens()[0].availableGeometry()
         w, h = desktop.width(), desktop.height()
         self.move(w//2 - self.width()//2, h//2 - self.height()//2)
+
+        with open('resource/qss/window.qss', mode='r', encoding='utf-8') as style:
+            self.setStyleSheet(style.read())
 
     def mostrarAcercade(self):
         posicion_cola = TeachingTipTailPosition.LEFT_BOTTOM
