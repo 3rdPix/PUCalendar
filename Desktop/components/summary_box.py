@@ -6,16 +6,13 @@ class InfoBox(QFrame):
 
     def __init__(self, titulo_seccion: str, parent: QWidget=None) -> None:
         super().__init__(parent)
-        self.setFixedSize(220, 250)
+        self.setFixedSize(250, 270)
         self.setFrameStyle(QFrame.Shape.StyledPanel | QFrame.Shadow.Plain)
         self.titulo = SubtitleLabel(text=titulo_seccion, parent=self)
         self.boton_redirigir = PrimaryToolButton(FIF.RIGHT_ARROW, parent=self)
         self.contenido = QFrame(parent=self)
         texto = SubtitleLabel(text='contenido', parent=self.contenido)
         texto.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        # contenido_layout = QHBoxLayout()
-        # contenido_layout.addWidget(texto)
-        # self.contenido.setLayout(contenido_layout)
 
         verticalbox = QVBoxLayout()
         horizontal = QHBoxLayout()
