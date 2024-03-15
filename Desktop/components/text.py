@@ -1,3 +1,4 @@
+# VERY LIKELY TO BE DEPRECATED
 from enum import Enum
 import json
 

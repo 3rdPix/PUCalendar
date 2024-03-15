@@ -1,3 +1,6 @@
+# VERY LIKELY TO BE DEPRECATED
+
+
 from PyQt6.QtCore import Qt
 from qfluentwidgets import SubtitleLabel, ToolButton, FluentIcon as FIF, PrimaryToolButton
 from PyQt6.QtWidgets import QFrame, QWidget, QVBoxLayout, QHBoxLayout

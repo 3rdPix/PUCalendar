@@ -1,3 +1,5 @@
+# VERY LIKELY TO BE DEPRECATED
+
 from os.path import join
 from enum import Enum
 import json
