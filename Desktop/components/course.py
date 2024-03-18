@@ -87,4 +87,4 @@ class Course:
         for property in kwargs: self.this_class[property] = kwargs.get(property)
 
     def __str__(self) -> str:
-        return f'{self.this_class.get('alias')} - {self.this_class.get('section')}'
+        return f'{self.this_class.get('alias')} - section {self.this_class.get('section')}'
