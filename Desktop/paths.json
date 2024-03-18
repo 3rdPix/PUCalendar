@@ -1,6 +1,8 @@
 {
     "window_icon": ["assets", "uc.png"],
     "about_background": ["assets", "campus3.png"],
-    "text": ["resource", "text.json"],
-    "qss": ["resource", "project.qss"]
+    "text": ["resources", "text.json"],
+    "qss": ["resources", "qss", "window.qss"],
+    "session_db": ["resources", "data", "session.db"],
+    "parameters": ["resources", "params.json"]
 }

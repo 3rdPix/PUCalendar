@@ -28,9 +28,9 @@ class MainWindow(MSFluentWindow):
 
     def init_window(self) -> None:
         self.resize(750, 750)
-        self.setWindowIcon(QIcon(Paths.WINDOW_ICON))
+        self.setWindowIcon(QIcon(Paths.get('window_icon')))
         self.setWindowTitle('PUCalendar')
-        with open(Paths.QSS, mode='r', encoding='utf-8') as style:
+        with open(Paths.get('qss'), mode='r', encoding='utf-8') as style:
             self.setStyleSheet(style.read())
         
     def init_contents(self) -> None:
@@ -54,7 +54,7 @@ class MainWindow(MSFluentWindow):
         if self.__showing_about: return
         self.__showing_about = True
         tail_position = TeachingTipTailPosition.LEFT_BOTTOM
-        image = QPixmap(Paths.ABOUT_BACKGROUND)
+        image = QPixmap(Paths.get('about_background'))
         bubble = TeachingTipView(title=AppText.APP_DESCRIPTION_TITLE,
                                  content=AppText.APP_DESCRIPTION, image=image,
                                  isClosable=True, tailPosition=tail_position)

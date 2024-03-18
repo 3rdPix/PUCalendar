@@ -1,0 +1,10 @@
+{
+    "block_params":
+    {
+        "starting_hour": "08:20",
+        "block_duration": 70,
+        "break_duration": 10,
+        "number_of_blocks": 9
+    },
+    "user": 1
+}

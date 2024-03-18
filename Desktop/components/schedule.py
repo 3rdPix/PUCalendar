@@ -17,7 +17,7 @@ class PUCDay:
             self._starts = starting
             self._ends = ending
             self._id = id(self)
-            self.holds = None
+            self.holds: list = list()
 
     def __init__(self, day: str, block_params: dict) -> None:
         self.day_name: str = day

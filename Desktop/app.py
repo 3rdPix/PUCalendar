@@ -10,13 +10,12 @@ from qfluentwidgets import FluentIcon as FIF
 from window.home import HomeInterface
 from typing import List
 import json
-
 from enum import Enum
 from os.path import join
 from components.paths import Paths
 from components.text import AppText
 from window.main_window import MainWindow
-
+from components.main_logic import MainLogic
 
 class PUCalendar(QApplication):
     """
@@ -28,7 +27,10 @@ class PUCalendar(QApplication):
 
         # Load paths, resources and files
         Paths.load_paths('paths.json')
-        AppText.load_text(Paths.TEXT)
-
+        AppText.load_text(Paths.get('text'))
+        self.logic = MainLogic()
+        self.logic.initSession()
+        self.logic.printCourses()
         self.mainWindow = MainWindow()
         self.mainWindow.show()
+

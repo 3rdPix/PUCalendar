@@ -1,6 +1,7 @@
 """
 Contains the function `search_for_courses` that uses official university API
-to retrieve information of courses matching a pattern
+to retrieve information of courses matching a pattern. Also contains classes
+to represent courses.
 """
 import requests
 from bs4 import BeautifulSoup
@@ -21,7 +22,7 @@ def _extract_course_data(html_snippet: str) -> list:
             'Course Code': columns[1].get_text().strip(),
             'Course Name': columns[9].get_text().strip(),
             'Professor': columns[10].find_all('a')[0].get_text().strip(),  # Extract first professor
-            'Location': columns[11].get_text().strip(),
+            'Campus': columns[11].get_text().strip(),
             'Section': columns[6].get_text().strip(),  # Extract section number
             'Dates': []  # Initialize an empty list for dates
         }
@@ -59,3 +60,31 @@ def search_for_courses(search_pattern: str, year: str, semester: str) -> list:
     courses_with_matching_nrc = _extract_course_data(nrc_response)
     return courses_with_matching_name + courses_with_matching_nrc
 
+class Course:
+    """
+    Main class to represent a course information, holds grades, color and
+    other specifications
+    """
+
+    def __init__(self, alias: str, color: str, **kwargs: str) -> None:
+        """
+        Initializes the course with only an alias and its representative color.
+        Can also receive other information with keys to save as part of the 
+        course specific data.
+        ---------------------------------------
+        Basic keys:
+         -'name': official name
+         -'nrc': university's internal class-specific identifier
+         -'code': university's internal course identifier
+         -'professor': main professor
+         -'campus'
+         -'section'
+         -'dates'
+        """
+        self.this_class: dict = {}
+        self.this_class['alias'] = alias
+        self.this_class['color'] = color
+        for property in kwargs: self.this_class[property] = kwargs.get(property)
+
+    def __str__(self) -> str:
+        return f'{self.this_class.get('alias')} - {self.this_class.get('section')}'

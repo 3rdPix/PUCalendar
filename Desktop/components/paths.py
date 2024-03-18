@@ -5,23 +5,23 @@ from enum import Enum
 import json
 
 
-class Paths(Enum):
+class Paths:
     """
     Enum class with paths to important files and resources.
     Paths are constructed using os.path
     Must call `load_paths()` first.
     """
+    directories: dict = {'':''}
 
-    WINDOW_ICON: str
-    ABOUT_BACKGROUND: str
-    TEXT: str
-    QSS: str
+    @staticmethod
+    def get(key: str) -> str:
+        return Paths.directories.get(key)
 
     @staticmethod
     def load_paths(json_file: str) -> None:
         with open(json_file, mode='r', encoding='utf-8') as paths_file:
             roots: dict = json.load(paths_file)
         for key in roots.keys():
-            name = key.upper()
+            name = key
             value = join(*roots.get(key))
-            setattr(Paths, name, value)
+            Paths.directories[name] = value
