@@ -4,7 +4,6 @@ from components.paths import Paths
 from components.schedule import PUCWeek
 from components.course import Course
 from components.database import PUCalendarDatabaseHandler as Db
-import sqlite3
 import json
 
 # Temporalmente estoy conectando a la base de datos directamente
@@ -40,3 +39,4 @@ class MainLogic(QObject):
 
     def printCourses(self) -> None:
         [print(f'\n{curso}') for curso in self.courses]
+

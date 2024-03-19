@@ -28,9 +28,12 @@ class PUCalendar(QApplication):
         # Load paths, resources and files
         Paths.load_paths('paths.json')
         AppText.load_text(Paths.get('text'))
+        
+        # application handler
         self.logic = MainLogic()
-        self.logic.initSession()
-        self.logic.printCourses()
+        
+        # window
         self.mainWindow = MainWindow()
+        
         self.mainWindow.show()
 

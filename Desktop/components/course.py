@@ -18,13 +18,13 @@ def _extract_course_data(html_snippet: str) -> list:
     for row in rows:
         columns = row.find_all('td')
         course_dict = {
-            'NRC': columns[0].get_text().strip(),
-            'Course Code': columns[1].get_text().strip(),
-            'Course Name': columns[9].get_text().strip(),
-            'Professor': columns[10].find_all('a')[0].get_text().strip(),  # Extract first professor
-            'Campus': columns[11].get_text().strip(),
-            'Section': columns[6].get_text().strip(),  # Extract section number
-            'Dates': []  # Initialize an empty list for dates
+            'nrc': columns[0].get_text().strip(),
+            'code': columns[1].get_text().strip(),
+            'name': columns[9].get_text().strip(),
+            'professor': columns[10].find_all('a')[0].get_text().strip(),  # Extract first professor
+            'campus': columns[11].get_text().strip(),
+            'section': columns[6].get_text().strip(),  # Extract section number
+            'dates': []  # Initialize an empty list for dates
         }
 
         # Extract dates from the table
@@ -35,7 +35,7 @@ def _extract_course_data(html_snippet: str) -> list:
                 date_info = [date_columns[0].get_text().strip(),
                              date_columns[1].get_text().strip(),
                              date_columns[2].get_text().strip()]
-                course_dict['Dates'].append(date_info)
+                course_dict['dates'].append(date_info)
 
         course_list.append(course_dict)
 
