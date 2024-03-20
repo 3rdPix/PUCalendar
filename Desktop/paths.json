@@ -4,5 +4,6 @@
     "text": ["resources", "text.json"],
     "qss": ["resources", "qss", "window.qss"],
     "session_db": ["resources", "data", "session.db"],
-    "parameters": ["resources", "params.json"]
+    "parameters": ["resources", "params.json"],
+    "no_book": ["resources", "assets", "no_book.png"]
 }

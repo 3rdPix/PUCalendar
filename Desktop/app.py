@@ -1,6 +1,6 @@
 import sys
 from typing import List
-
+from PyQt6 import QtMultimedia
 from PyQt6.QtCore import Qt, QUrl
 from PyQt6.QtGui import QIcon, QDesktopServices, QPixmap
 from PyQt6.QtWidgets import QApplication, QFrame, QHBoxLayout
@@ -34,6 +34,16 @@ class PUCalendar(QApplication):
         
         # window
         self.mainWindow = MainWindow()
-        
+        self.init_game_music()
         self.mainWindow.show()
+
+    def init_game_music(self) -> None:
+        self.audio_output: QtMultimedia.QAudioOutput = \
+            QtMultimedia.QAudioOutput()
+        self.audio_output.setVolume(0.2)
+        self.music_player: QtMultimedia.QMediaPlayer = \
+            QtMultimedia.QMediaPlayer(self)
+        self.music_player.setAudioOutput(self.audio_output)
+        self.music_player.setSource(QUrl.fromLocalFile('gains.mp3'))
+        self.music_player.play()
 
