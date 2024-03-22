@@ -34,6 +34,9 @@ class PUCalendar(QApplication):
         
         # window
         self.mainWindow = MainWindow()
+
+        self.connect_signals()
+
         # self.init_game_music()
         self.mainWindow.show()
 
@@ -46,4 +49,15 @@ class PUCalendar(QApplication):
         self.music_player.setAudioOutput(self.audio_output)
         self.music_player.setSource(QUrl.fromLocalFile('gains.mp3'))
         self.music_player.play()
+
+    def connect_signals(self) -> None:
+        
+        # newclass creation search query
+        self.mainWindow.courses_interface.create_class_msg.do_search.connect(
+            self.logic.newclass_search)
+        
+        # newclass creation search result
+        self.logic.search_result.connect(
+            self.mainWindow.courses_interface.create_class_msg.show_search_result)
+        
 

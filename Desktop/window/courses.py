@@ -1,7 +1,7 @@
-from PyQt6.QtWidgets import QGraphicsOpacityEffect, QFrame, QHBoxLayout, QVBoxLayout, QWidget, QLabel, QStackedWidget
-from PyQt6.QtCore import Qt, QPropertyAnimation, QAbstractAnimation
+from PyQt6.QtWidgets import QListWidgetItem, QGraphicsOpacityEffect, QFrame, QHBoxLayout, QVBoxLayout, QWidget, QLabel, QStackedWidget
+from PyQt6.QtCore import Qt, QPropertyAnimation, QAbstractAnimation, pyqtSignal
 from PyQt6.QtGui import QKeyEvent, QPixmap
-from qfluentwidgets import LineEdit, CaptionLabel ,MessageBoxBase, FlowLayout, TitleLabel, ScrollArea, SubtitleLabel, setFont, CommandBar, Action, FluentIcon as FIF
+from qfluentwidgets import ListWidget, LineEdit, CaptionLabel ,MessageBoxBase, FlowLayout, TitleLabel, ScrollArea, SubtitleLabel, setFont, CommandBar, Action, FluentIcon as FIF
 from qfluentwidgets.components.widgets.card_widget import CardWidget, CardSeparator, ElevatedCardWidget
 from components.paths import Paths
 from components.course import Course
@@ -75,7 +75,11 @@ class CoursesInterface(QFrame):
         layout.addWidget(CardSeparator())
         layout.addWidget(self.information_stack, Qt.AlignmentFlag.AlignCenter)
 
+
+
         self.setObjectName(text.replace(' ', '-'))
+        self.create_class_msg = NewClassInterface(self)
+        self.create_class_msg.hide()
 
     def create_commandBar_actions(self) -> list[Action]:
         actions = list()
@@ -91,8 +95,7 @@ class CoursesInterface(QFrame):
         return actions
 
     def add_new(self) -> None:
-        box = NewClassInterface(self.parentWidget().parentWidget().parentWidget())
-        box.show()
+        self.create_class_msg.show()
 
     def delete_class(self) -> None:
         pass
@@ -184,16 +187,37 @@ class CourseSummaryBox(CardWidget):
 
 class NewClassInterface(MessageBoxBase):
 
+    do_search = pyqtSignal(str)
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.init_UI()
+        self.search_line.returnPressed.connect(self.search_for)
 
     def init_UI(self) -> None:
-        search_label = CaptionLabel('Search:')
+        search_label = CaptionLabel('Buscar curso:')
+        
         self.search_line = LineEdit()
         self.search_line.setClearButtonEnabled(True)
+        self.search_line.setPlaceholderText('Ingresar nombre o sigla')
+        self.list_view = ListWidget()
+        self.list_view.itemClicked.connect(
+            lambda: self.yesButton.setEnabled(True))
         lay = QHBoxLayout()
         lay.addWidget(search_label)
         lay.addWidget(self.search_line)
         self.viewLayout.addLayout(lay)
+        self.viewLayout.addWidget(self.list_view)
         self.yesButton.setDisabled(True)
+        self.yesButton.setText('Confirmar')
+        self.cancelButton.setText('Cancelar')
+
+    def search_for(self) -> None:
+        self.list_view.setCurrentRow(-1)
+        self.yesButton.setEnabled(False)
+        self.do_search.emit(self.search_line.text())
+        
+
+    def show_search_result(self, result_list: list[str]) -> None:
+        self.list_view.clear()
+        self.list_view.addItems(result_list)

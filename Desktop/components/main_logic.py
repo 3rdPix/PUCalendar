@@ -1,8 +1,8 @@
-from PyQt6.QtCore import QObject
+from PyQt6.QtCore import QObject, pyqtSignal
 from os.path import exists
 from components.paths import Paths
 from components.schedule import PUCWeek
-from components.course import Course
+from components.course import Course, search_for_courses
 from components.database import PUCalendarDatabaseHandler as Db
 import json
 
@@ -14,6 +14,8 @@ import json
 
 
 class MainLogic(QObject):
+
+    search_result: pyqtSignal = pyqtSignal(list)
 
     def __init__(self) -> None:
         super().__init__()
@@ -39,4 +41,14 @@ class MainLogic(QObject):
 
     def printCourses(self) -> None:
         [print(f'\n{curso}') for curso in self.courses]
+
+    def newclass_search(self, text: str) -> None:
+        if len(text) < 3: return
+        available = search_for_courses(text, '2024', '1')
+        shown_list = list()
+        for course in available:
+            shown_list.append(
+                f'{course.get("name")} - Sección {course.get("section")} ({course.get("code")})'
+            )
+        self.search_result.emit(shown_list)
 
