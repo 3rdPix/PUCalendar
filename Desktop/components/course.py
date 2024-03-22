@@ -21,9 +21,9 @@ def _extract_course_data(html_snippet: str) -> list:
             'nrc': columns[0].get_text().strip(),
             'code': columns[1].get_text().strip(),
             'name': columns[9].get_text().strip(),
-            'professor': columns[10].find_all('a')[0].get_text().strip(),  # Extract first professor
+            'professor': columns[10].find_all('a')[0].get_text().strip(),
             'campus': columns[11].get_text().strip(),
-            'section': columns[6].get_text().strip(),  # Extract section number
+            'section': columns[6].get_text().strip(),  
             'dates': []  # Initialize an empty list for dates
         }
 

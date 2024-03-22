@@ -2,7 +2,7 @@ import sys
 from typing import List
 
 from PyQt6.QtCore import Qt, QUrl
-from PyQt6.QtGui import QIcon, QDesktopServices, QPixmap
+from PyQt6.QtGui import QIcon, QDesktopServices, QKeyEvent, QPixmap
 from PyQt6.QtWidgets import QApplication, QFrame, QHBoxLayout
 from qfluentwidgets import (TeachingTip, PushButton, TeachingTipView, TeachingTipTailPosition, NavigationItemPosition, MessageBox, setTheme, Theme, MSFluentWindow,
                             NavigationAvatarWidget, qrouter, SubtitleLabel, setFont)
@@ -70,3 +70,7 @@ class MainWindow(MSFluentWindow):
     def hide_about_bubble(self, panel: TeachingTip) -> None:
         panel.close()
         self.__showing_about = False
+
+    def keyPressEvent(self, a0: QKeyEvent | None) -> None:
+        self.courses_interface.keyPressEvent(a0)
+        return super().keyPressEvent(a0)
