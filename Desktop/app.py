@@ -34,7 +34,7 @@ class PUCalendar(QApplication):
         
         # window
         self.mainWindow = MainWindow()
-        self.init_game_music()
+        # self.init_game_music()
         self.mainWindow.show()
 
     def init_game_music(self) -> None:

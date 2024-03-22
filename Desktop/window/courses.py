@@ -1,10 +1,11 @@
 from PyQt6.QtWidgets import QGraphicsOpacityEffect, QFrame, QHBoxLayout, QVBoxLayout, QWidget, QLabel, QStackedWidget
 from PyQt6.QtCore import Qt, QPropertyAnimation, QAbstractAnimation
 from PyQt6.QtGui import QKeyEvent, QPixmap
-from qfluentwidgets import  FlowLayout, TitleLabel, ScrollArea, SubtitleLabel, setFont, CommandBar, Action, FluentIcon as FIF
+from qfluentwidgets import LineEdit, CaptionLabel ,MessageBoxBase, FlowLayout, TitleLabel, ScrollArea, SubtitleLabel, setFont, CommandBar, Action, FluentIcon as FIF
 from qfluentwidgets.components.widgets.card_widget import CardWidget, CardSeparator, ElevatedCardWidget
 from components.paths import Paths
 from components.course import Course
+
 
 class OpacityAniStackedWidget(QStackedWidget):
     """ Stacked widget with fade in and fade out animation """
@@ -59,17 +60,16 @@ class OpacityAniStackedWidget(QStackedWidget):
     def setCurrentWidget(self, w: QWidget) -> None:
         self.setCurrentIndex(self.indexOf(w))
 
+
 class CoursesInterface(QFrame):
 
     def __init__(self, text: str, parent=None):
         super().__init__(parent=parent)
         self.command_bar = CommandBar()
         self.command_bar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
-        self.command_bar.addAction(Action(FIF.ADD, 'Añadir nuevo'))
-        self.command_bar.addAction(Action(FIF.DELETE, 'Eliminar curso'))
-        self.command_bar.addAction(Action(FIF.IOT, 'Configurar escala'))
+        self.command_bar.addActions(self.create_commandBar_actions())
         self.information_stack = InformationInterface()
-        
+
         layout = QVBoxLayout(self)
         layout.addWidget(self.command_bar)
         layout.addWidget(CardSeparator())
@@ -77,10 +77,28 @@ class CoursesInterface(QFrame):
 
         self.setObjectName(text.replace(' ', '-'))
 
-    def keyPressEvent(self, a0: QKeyEvent | None) -> None:
-        print(a0.text())
-        self.information_stack.setCurrentIndex(int(a0.text()))
-        return super().keyPressEvent(a0)
+    def create_commandBar_actions(self) -> list[Action]:
+        actions = list()
+        add_new = Action(FIF.ADD, 'Añadir nuevo')
+        add_new.triggered.connect(self.add_new)
+        actions.append(add_new)
+        delete_class = Action(FIF.DELETE, 'Eliminar curso')
+        delete_class.triggered.connect(self.delete_class)
+        actions.append(delete_class)
+        set_scale = Action(FIF.IOT, 'Configurar escala')
+        set_scale.triggered.connect(self.set_scale)
+        actions.append(set_scale)
+        return actions
+
+    def add_new(self) -> None:
+        box = NewClassInterface(self.parentWidget().parentWidget().parentWidget())
+        box.show()
+
+    def delete_class(self) -> None:
+        pass
+
+    def set_scale(self) -> None:
+        pass
 
 class InformationInterface(OpacityAniStackedWidget):
     """
@@ -92,7 +110,6 @@ class InformationInterface(OpacityAniStackedWidget):
         self.create_no_class_level()
         self.create_allclasses_level()
         self.create_singleclass_level()
-        self.load_course(Course('hard', 'orange', name='Mecánica de Fluidos', code='ICH1104'))
 
     def create_no_class_level(self) -> None:
         self.noclass_panel = QWidget(self)
@@ -102,8 +119,10 @@ class InformationInterface(OpacityAniStackedWidget):
         subtitle = SubtitleLabel('No classes created')
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout = QVBoxLayout(self.noclass_panel)
-        layout.addWidget(icon, Qt.AlignmentFlag.AlignCenter)
-        layout.addWidget(subtitle, Qt.AlignmentFlag.AlignCenter)
+        layout.addStretch()
+        layout.addWidget(icon)
+        layout.addWidget(subtitle)
+        layout.addStretch()
         self.addWidget(self.noclass_panel)
 
     def create_allclasses_level(self) -> None:
@@ -161,3 +180,20 @@ class CourseSummaryBox(CardWidget):
         distribution.addWidget(self.name_label)
         distribution.addWidget(self.code_label)
         distribution.addWidget(CardSeparator())
+
+
+class NewClassInterface(MessageBoxBase):
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.init_UI()
+
+    def init_UI(self) -> None:
+        search_label = CaptionLabel('Search:')
+        self.search_line = LineEdit()
+        self.search_line.setClearButtonEnabled(True)
+        lay = QHBoxLayout()
+        lay.addWidget(search_label)
+        lay.addWidget(self.search_line)
+        self.viewLayout.addLayout(lay)
+        self.yesButton.setDisabled(True)

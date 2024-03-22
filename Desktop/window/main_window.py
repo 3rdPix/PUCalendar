@@ -70,7 +70,3 @@ class MainWindow(MSFluentWindow):
     def hide_about_bubble(self, panel: TeachingTip) -> None:
         panel.close()
         self.__showing_about = False
-
-    def keyPressEvent(self, a0: QKeyEvent | None) -> None:
-        self.courses_interface.keyPressEvent(a0)
-        return super().keyPressEvent(a0)
