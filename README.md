@@ -2,6 +2,9 @@
 
 > Agenda para trabajos universitarios
 
+![Static Badge](https://img.shields.io/badge/Status-unfinished-red)
+
+
 Esta aplicación busca otorgar herramientas para llevar de manera ordenada un registro de las actividades universitarias que se presentan en los estudios de la Pontificia Universidad Católica de Chile, a la vez que hace sencilla la organización y el seguimiento de la malla, los cursos de un semestre, sus calificaciones, etc.
 
 La idea nace a partir de los requerimientos muy específicos de algunos cursos y la gran cantidad de plataformas en línea (ajenas u oficiales) que se deben utilizar en la creación de un sistema de actividades ordenado. PUCalendar busca integrar estos sistemas en una agenda que permita visualizar con precisión y rapidez la información más importante semana a semana, de modo que el estudiante pueda concentrar sus esfuerzos en el estudio y la realización de trabajos.

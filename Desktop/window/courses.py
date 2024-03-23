@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QListWidgetItem, QGraphicsOpacityEffect, QFrame, QHBoxLayout, QVBoxLayout, QWidget, QLabel, QStackedWidget
 from PyQt6.QtCore import Qt, QPropertyAnimation, QAbstractAnimation, pyqtSignal
-from PyQt6.QtGui import QKeyEvent, QPixmap
+from PyQt6.QtGui import QKeyEvent, QPixmap, QScreen
 from qfluentwidgets import ListWidget, LineEdit, CaptionLabel ,MessageBoxBase, FlowLayout, TitleLabel, ScrollArea, SubtitleLabel, setFont, CommandBar, Action, FluentIcon as FIF
 from qfluentwidgets.components.widgets.card_widget import CardWidget, CardSeparator, ElevatedCardWidget
 from components.paths import Paths
@@ -63,8 +63,14 @@ class OpacityAniStackedWidget(QStackedWidget):
 
 class CoursesInterface(QFrame):
 
+    created_new = pyqtSignal(int)
+
     def __init__(self, text: str, parent=None):
         super().__init__(parent=parent)
+        
+        self.create_class_msg = NewClassInterface(self)
+        self.create_class_msg.hide()
+        self.create_class_msg.accepted.connect(self.add_new)
         self.command_bar = CommandBar()
         self.command_bar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
         self.command_bar.addActions(self.create_commandBar_actions())
@@ -78,13 +84,12 @@ class CoursesInterface(QFrame):
 
 
         self.setObjectName(text.replace(' ', '-'))
-        self.create_class_msg = NewClassInterface(self)
-        self.create_class_msg.hide()
+        
 
     def create_commandBar_actions(self) -> list[Action]:
         actions = list()
         add_new = Action(FIF.ADD, 'Añadir nuevo')
-        add_new.triggered.connect(self.add_new)
+        add_new.triggered.connect(self.create_class_msg.show)
         actions.append(add_new)
         delete_class = Action(FIF.DELETE, 'Eliminar curso')
         delete_class.triggered.connect(self.delete_class)
@@ -95,7 +100,7 @@ class CoursesInterface(QFrame):
         return actions
 
     def add_new(self) -> None:
-        self.create_class_msg.show()
+        self.created_new.emit(self.create_class_msg.list_view.currentRow())
 
     def delete_class(self) -> None:
         pass
@@ -201,16 +206,28 @@ class NewClassInterface(MessageBoxBase):
         self.search_line.setClearButtonEnabled(True)
         self.search_line.setPlaceholderText('Ingresar nombre o sigla')
         self.list_view = ListWidget()
+        alias_label = CaptionLabel('Alias:')
+        self.alias_line = LineEdit()
+        self.alias_line.setClearButtonEnabled(True)
+        self.color_box = QFrame()
+        self.color_box.setStyleSheet(f'QFrame {{background-color: blue}}')
         self.list_view.itemClicked.connect(
             lambda: self.yesButton.setEnabled(True))
         lay = QHBoxLayout()
         lay.addWidget(search_label)
         lay.addWidget(self.search_line)
+        lay2 = QHBoxLayout()
+        lay2.addWidget(alias_label)
+        lay2.addWidget(self.alias_line)
+        lay2.addWidget(self.color_box)
         self.viewLayout.addLayout(lay)
+        self.viewLayout.addLayout(lay2)
         self.viewLayout.addWidget(self.list_view)
         self.yesButton.setDisabled(True)
         self.yesButton.setText('Confirmar')
         self.cancelButton.setText('Cancelar')
+
+
 
     def search_for(self) -> None:
         self.list_view.setCurrentRow(-1)
@@ -221,3 +238,7 @@ class NewClassInterface(MessageBoxBase):
     def show_search_result(self, result_list: list[str]) -> None:
         self.list_view.clear()
         self.list_view.addItems(result_list)
+
+    def clearinterface(self) -> None:
+        self.list_view.clear()
+        self.search_line.clear()

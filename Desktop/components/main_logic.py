@@ -52,3 +52,4 @@ class MainLogic(QObject):
             )
         self.search_result.emit(shown_list)
 
+
