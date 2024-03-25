@@ -1,6 +1,6 @@
 from PyQt6.QtWidgets import QListWidgetItem, QGraphicsOpacityEffect, QFrame, QHBoxLayout, QVBoxLayout, QWidget, QLabel, QStackedWidget
 from PyQt6.QtCore import Qt, QPropertyAnimation, QAbstractAnimation, pyqtSignal
-from PyQt6.QtGui import QKeyEvent, QPixmap, QScreen, QColor
+from PyQt6.QtGui import QKeyEvent, QPixmap, QScreen, QColor, QFontMetrics
 from qfluentwidgets import ColorPickerButton,ListWidget, LineEdit, CaptionLabel ,MessageBoxBase, FlowLayout, TitleLabel, ScrollArea, SubtitleLabel, setFont, CommandBar, Action, FluentIcon as FIF
 from qfluentwidgets.components.widgets.card_widget import CardWidget, CardSeparator, ElevatedCardWidget
 from components.paths import Paths
@@ -107,6 +107,43 @@ class CoursesInterface(QFrame):
     def set_scale(self) -> None:
         pass
 
+
+class CourseSummaryBox(ElevatedCardWidget):
+
+    def __init__(self, course: Course, parent=None):
+        super().__init__(parent)
+        self.setFixedSize(200, 200)
+        self.alias_label = TitleLabel(course.this_class.get('alias'))
+        self.alias_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.alias_label.setStyleSheet(
+            f'QLabel{{ font: italic }}'
+        )
+        self.alias_label.setWordWrap(True)
+        self.name_label = SubtitleLabel(course.this_class.get('name'))
+        self.name_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        self.name_label.setWordWrap(True)
+        self.code_label = SubtitleLabel(course.this_class.get('code'))
+        self.code_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+
+        color_box = QFrame()
+        color_box.setFixedSize(15, 15)
+        color_box.setStyleSheet(
+            f'QFrame{{ background-color:{course.this_class.get("color")} }}')
+        
+        distribution = QVBoxLayout(self)
+        lateral_1 = QHBoxLayout()
+        lateral_1.addStretch()
+        lateral_1.addWidget(color_box)
+        lateral_1.addWidget(self.alias_label)
+        lateral_1.addStretch()
+        distribution.addLayout(lateral_1)
+        distribution.addWidget(self.name_label)
+        distribution.addWidget(self.code_label)
+        distribution.addWidget(CardSeparator())
+
+
 class InformationInterface(OpacityAniStackedWidget):
     """
     Three-way stacked widget to show information about courses
@@ -147,47 +184,9 @@ class InformationInterface(OpacityAniStackedWidget):
         self.singleclass_panel = QWidget(self)
         self.addWidget(self.singleclass_panel)
 
-    def load_course(self, box) -> None:
+    def load_course(self, box: CourseSummaryBox) -> None:
         self.widget_flow.addWidget(box)
-
-
-class CourseSummaryBox(ElevatedCardWidget):
-
-    def __init__(self, course: Course, parent=None):
-        super().__init__(parent)
-        self.setFixedSize(200, 200)
-        self.alias_label = TitleLabel(course.this_class.get('alias'))
-        self.alias_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.alias_label.setStyleSheet(
-            f'QLabel{{ font: italic }}'
-        )
-        self.name_label = SubtitleLabel(course.this_class.get('name'))
-        self.name_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.name_label.setStyleSheet(
-            f'QLabel {{ font: 8pt }}'
-        )
-        self.code_label = SubtitleLabel(course.this_class.get('code'))
-        self.code_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.code_label.setStyleSheet(
-            f'QLabel {{ font: 9pt }}'
-        )
-
-        color_box = QFrame()
-        color_box.setFixedSize(15, 15)
-        color_box.setStyleSheet(
-            f'QFrame{{ background-color:{course.this_class.get("color")} }}')
-        
-        distribution = QVBoxLayout(self)
-        lateral_1 = QHBoxLayout()
-        lateral_1.addStretch()
-        lateral_1.addWidget(color_box)
-        lateral_1.addWidget(self.alias_label)
-        lateral_1.addStretch()
-        distribution.addLayout(lateral_1)
-        distribution.addWidget(self.name_label)
-        distribution.addWidget(self.code_label)
-        distribution.addWidget(CardSeparator())
-
+        print(box.alias_label.text())
 
 class NewClassInterface(MessageBoxBase):
 
@@ -212,6 +211,7 @@ class NewClassInterface(MessageBoxBase):
         self.alias_line.setClearButtonEnabled(True)
         self.alias_line.setPlaceholderText('Cómo te refieres a este ramo')
         self.alias_line.setEnabled(False)
+        self.alias_line.setMaxLength(10)
         color_label = CaptionLabel('Color:')
         self.color_box = ColorPickerButton(QColor("#5012aaa2"), 'color_btn')
         self.color_box.setFixedSize(20, 20)
@@ -260,3 +260,4 @@ class NewClassInterface(MessageBoxBase):
         self.alias_line.clear()
         self.alias_line.setEnabled(False)
         self.color_box.setEnabled(False)
+        self.yesButton.setEnabled(False)

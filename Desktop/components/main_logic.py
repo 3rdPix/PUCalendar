@@ -5,12 +5,21 @@ from components.schedule import PUCWeek
 from components.course import Course, search_for_courses
 from components.database import PUCalendarDatabaseHandler as Db
 import json
+import datetime
 
 # Temporalmente estoy conectando a la base de datos directamente
 # Dentro de poco debe abstraer la funcionalidad de la conexión
 # y las queries a una clase específica para, aun más a futuro,
 # independizar y comunicar con API a un servidor más elaborado
 
+def get_year_and_value() -> tuple[str]:
+    current_month = datetime.datetime.now().month
+    current_year = str(datetime.datetime.now().year)
+
+    if current_month >= 12 or current_month <= 6:
+        return (current_year, '1')
+    else:
+        return (current_year, '2')
 
 
 class MainLogic(QObject):
@@ -46,7 +55,7 @@ class MainLogic(QObject):
 
     def newclass_search(self, text: str) -> None:
         if len(text) < 3: return
-        self.current_search_result = search_for_courses(text, '2024', '1')
+        self.current_search_result = search_for_courses(text, *get_year_and_value())
         shown_list = list()
         for course in self.current_search_result:
             shown_list.append(
