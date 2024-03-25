@@ -1,7 +1,7 @@
 from PyQt6.QtWidgets import QListWidgetItem, QGraphicsOpacityEffect, QFrame, QHBoxLayout, QVBoxLayout, QWidget, QLabel, QStackedWidget
 from PyQt6.QtCore import Qt, QPropertyAnimation, QAbstractAnimation, pyqtSignal
-from PyQt6.QtGui import QKeyEvent, QPixmap, QScreen
-from qfluentwidgets import ListWidget, LineEdit, CaptionLabel ,MessageBoxBase, FlowLayout, TitleLabel, ScrollArea, SubtitleLabel, setFont, CommandBar, Action, FluentIcon as FIF
+from PyQt6.QtGui import QKeyEvent, QPixmap, QScreen, QColor
+from qfluentwidgets import ColorPickerButton,ListWidget, LineEdit, CaptionLabel ,MessageBoxBase, FlowLayout, TitleLabel, ScrollArea, SubtitleLabel, setFont, CommandBar, Action, FluentIcon as FIF
 from qfluentwidgets.components.widgets.card_widget import CardWidget, CardSeparator, ElevatedCardWidget
 from components.paths import Paths
 from components.course import Course
@@ -63,14 +63,13 @@ class OpacityAniStackedWidget(QStackedWidget):
 
 class CoursesInterface(QFrame):
 
-    created_new = pyqtSignal(int)
-
     def __init__(self, text: str, parent=None):
         super().__init__(parent=parent)
+        self.loaded_courses = {}
+
+        self.newclass_search_interface = NewClassInterface(self.parent())
+        self.newclass_search_interface.hide()
         
-        self.create_class_msg = NewClassInterface(self)
-        self.create_class_msg.hide()
-        self.create_class_msg.accepted.connect(self.add_new)
         self.command_bar = CommandBar()
         self.command_bar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
         self.command_bar.addActions(self.create_commandBar_actions())
@@ -81,15 +80,13 @@ class CoursesInterface(QFrame):
         layout.addWidget(CardSeparator())
         layout.addWidget(self.information_stack, Qt.AlignmentFlag.AlignCenter)
 
-
-
         self.setObjectName(text.replace(' ', '-'))
         
 
     def create_commandBar_actions(self) -> list[Action]:
         actions = list()
         add_new = Action(FIF.ADD, 'Añadir nuevo')
-        add_new.triggered.connect(self.create_class_msg.show)
+        add_new.triggered.connect(self.newclass_search_interface.show)
         actions.append(add_new)
         delete_class = Action(FIF.DELETE, 'Eliminar curso')
         delete_class.triggered.connect(self.delete_class)
@@ -99,8 +96,10 @@ class CoursesInterface(QFrame):
         actions.append(set_scale)
         return actions
 
-    def add_new(self) -> None:
-        self.created_new.emit(self.create_class_msg.list_view.currentRow())
+    def add_new(self, course: Course) -> None:
+        self.loaded_courses[course.this_class.get('nrc')] = (box := CourseSummaryBox(course))
+        self.information_stack.load_course(box)
+        self.information_stack.setCurrentIndex(1)
 
     def delete_class(self) -> None:
         pass
@@ -148,15 +147,15 @@ class InformationInterface(OpacityAniStackedWidget):
         self.singleclass_panel = QWidget(self)
         self.addWidget(self.singleclass_panel)
 
-    def load_course(self, course: Course) -> None:
-        self.widget_flow.addWidget(
-            CourseSummaryBox(course))
+    def load_course(self, box) -> None:
+        self.widget_flow.addWidget(box)
 
 
-class CourseSummaryBox(CardWidget):
+class CourseSummaryBox(ElevatedCardWidget):
 
     def __init__(self, course: Course, parent=None):
         super().__init__(parent)
+        self.setFixedSize(200, 200)
         self.alias_label = TitleLabel(course.this_class.get('alias'))
         self.alias_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.alias_label.setStyleSheet(
@@ -193,11 +192,13 @@ class CourseSummaryBox(CardWidget):
 class NewClassInterface(MessageBoxBase):
 
     do_search = pyqtSignal(str)
+    newclass_fromWeb = pyqtSignal(int, str, str)
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self.init_UI()
         self.search_line.returnPressed.connect(self.search_for)
+        self.accepted.connect(self.send_selection)
 
     def init_UI(self) -> None:
         search_label = CaptionLabel('Buscar curso:')
@@ -209,30 +210,44 @@ class NewClassInterface(MessageBoxBase):
         alias_label = CaptionLabel('Alias:')
         self.alias_line = LineEdit()
         self.alias_line.setClearButtonEnabled(True)
-        self.color_box = QFrame()
-        self.color_box.setStyleSheet(f'QFrame {{background-color: blue}}')
+        self.alias_line.setPlaceholderText('Cómo te refieres a este ramo')
+        self.alias_line.setEnabled(False)
+        color_label = CaptionLabel('Color:')
+        self.color_box = ColorPickerButton(QColor("#5012aaa2"), 'color_btn')
+        self.color_box.setFixedSize(20, 20)
+        self.color_box.setEnabled(False)
         self.list_view.itemClicked.connect(
-            lambda: self.yesButton.setEnabled(True))
+            lambda: [self.yesButton.setEnabled(True),
+                     self.alias_line.setEnabled(True),
+                     self.color_box.setEnabled(True)])
         lay = QHBoxLayout()
         lay.addWidget(search_label)
         lay.addWidget(self.search_line)
         lay2 = QHBoxLayout()
         lay2.addWidget(alias_label)
         lay2.addWidget(self.alias_line)
+        lay2.addWidget(color_label)
         lay2.addWidget(self.color_box)
         self.viewLayout.addLayout(lay)
-        self.viewLayout.addLayout(lay2)
         self.viewLayout.addWidget(self.list_view)
+        self.viewLayout.addLayout(lay2)
         self.yesButton.setDisabled(True)
         self.yesButton.setText('Confirmar')
         self.cancelButton.setText('Cancelar')
 
-
+    def send_selection(self) -> None:
+        self.newclass_fromWeb.emit(
+            self.list_view.currentRow(),
+            self.alias_line.text(),
+            self.color_box.color.name()
+        )
+        self.clearinterface()
 
     def search_for(self) -> None:
         self.list_view.setCurrentRow(-1)
         self.yesButton.setEnabled(False)
         self.do_search.emit(self.search_line.text())
+        
         
 
     def show_search_result(self, result_list: list[str]) -> None:
@@ -242,3 +257,6 @@ class NewClassInterface(MessageBoxBase):
     def clearinterface(self) -> None:
         self.list_view.clear()
         self.search_line.clear()
+        self.alias_line.clear()
+        self.alias_line.setEnabled(False)
+        self.color_box.setEnabled(False)

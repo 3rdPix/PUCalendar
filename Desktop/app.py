@@ -53,11 +53,19 @@ class PUCalendar(QApplication):
     def connect_signals(self) -> None:
         
         # newclass creation search query
-        self.mainWindow.courses_interface.create_class_msg.do_search.connect(
+        self.mainWindow.courses_interface.newclass_search_interface.do_search.connect(
             self.logic.newclass_search)
         
         # newclass creation search result
         self.logic.search_result.connect(
-            self.mainWindow.courses_interface.create_class_msg.show_search_result)
+            self.mainWindow.courses_interface.newclass_search_interface.show_search_result)
+
+        # newclass selection
+        self.mainWindow.courses_interface.newclass_search_interface.newclass_fromWeb.connect(
+            self.logic.newclass_fromWeb)
+        
+        # newclass show DANGER
+        self.logic.toFront_loadCourse.connect(
+            self.mainWindow.courses_interface.add_new)
         
 

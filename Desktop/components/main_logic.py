@@ -16,6 +16,7 @@ import json
 class MainLogic(QObject):
 
     search_result: pyqtSignal = pyqtSignal(list)
+    toFront_loadCourse = pyqtSignal(Course)
 
     def __init__(self) -> None:
         super().__init__()
@@ -23,6 +24,7 @@ class MainLogic(QObject):
             self.parameters = json.load(params_file)
         self.week = PUCWeek(self.parameters.get('block_params'))
         self.db = Db(Paths.get('session_db'))
+        self.initSession()
 
     def initSession(self) -> None:
         # Check if database already exists
@@ -44,12 +46,16 @@ class MainLogic(QObject):
 
     def newclass_search(self, text: str) -> None:
         if len(text) < 3: return
-        available = search_for_courses(text, '2024', '1')
+        self.current_search_result = search_for_courses(text, '2024', '1')
         shown_list = list()
-        for course in available:
+        for course in self.current_search_result:
             shown_list.append(
                 f'{course.get("name")} - Sección {course.get("section")} ({course.get("code")})'
             )
         self.search_result.emit(shown_list)
 
-
+    def newclass_fromWeb(self, index: int, alias: str, color: str) -> None:
+        self.courses.append(
+            new := Course(alias, color, **self.current_search_result[index]))
+        del self.current_search_result
+        self.toFront_loadCourse.emit(new)
