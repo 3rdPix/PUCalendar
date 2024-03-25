@@ -45,7 +45,8 @@ def _extract_course_data(html_snippet: str) -> list:
         
     return course_list
 
-def search_for_courses(search_pattern: str, year: str, semester: str) -> list:
+def search_for_courses(search_pattern: str,
+                       year: str, semester: str) -> list[dict] | None:
     """
     Searches for courses that match the pattern
     -------------------------------------------

@@ -46,7 +46,7 @@ class PUCalendarDatabaseHandler:
             CREATE TABLE Users_Courses (
                 user_id INTEGER,
                 course_id INTEGER,
-                dedicated_minutes INTEGER,
+                dedicated_time INTEGER,
                 alias TEXT,
                 color TEXT,
                 FOREIGN KEY(user_id) REFERENCES Users(id),
@@ -76,7 +76,7 @@ class PUCalendarDatabaseHandler:
     
     def get_courses(self, user_id: int) -> list[dict]|None:
         self.db_cursor.execute(f"""
-            SELECT Courses.*, Users_Courses.alias, Users_Courses.color, Users_Courses.dedicated_minutes
+            SELECT Courses.*, Users_Courses.alias, Users_Courses.color, Users_Courses.dedicated_time
             FROM Users_Courses
             JOIN Courses ON Users_Courses.course_id = Courses.id
             WHERE Users_Courses.user_id = ?""", (user_id, ))
