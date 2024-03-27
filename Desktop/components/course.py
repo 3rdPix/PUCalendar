@@ -27,7 +27,8 @@ def _extract_course_data(html_snippet: str) -> list:
         }
 
         try:
-            course_dict['professor'] = columns[10].find_all('a')[0].get_text().strip()
+            course_dict['professor'] = \
+                columns[10].find_all('a')[0].get_text().strip()
         except IndexError:
             course_dict['professor'] = 'Ninguno'
 
@@ -45,7 +46,7 @@ def _extract_course_data(html_snippet: str) -> list:
         
     return course_list
 
-def search_for_courses(search_pattern: str,
+def search_for_puclasses(search_pattern: str,
                        year: str, semester: str) -> list[dict] | None:
     """
     Searches for courses that match the pattern
@@ -65,13 +66,14 @@ def search_for_courses(search_pattern: str,
     courses_with_matching_nrc = _extract_course_data(nrc_response)
     return courses_with_matching_name + courses_with_matching_nrc
 
-class Course:
+class PUClass:
     """
     Main class to represent a course information, holds grades, color and
     other specifications
     """
 
-    def __init__(self, alias: str, color: str, dedicated_time: float=0.0, **kwargs: str) -> None:
+    def __init__(self, alias: str, color: str,
+                 dedicated_time: float=0.0, **kwargs: str) -> None:
         """
         Initializes the course with only an alias and its representative color.
         Can also receive other information with keys to save as part of the 
@@ -86,11 +88,11 @@ class Course:
          -'section'
          -'dates'
         """
-        self.this_class: dict = {}
-        self.this_class['alias'] = alias
-        self.this_class['color'] = color
-        self.this_class['dedicated_time'] = dedicated_time
-        for property in kwargs: self.this_class[property] = kwargs.get(property)
+        self.info: dict = {}
+        self.info['alias'] = alias
+        self.info['color'] = color
+        self.info['dedicated_time'] = dedicated_time
+        self.info.update(kwargs)
 
     def __str__(self) -> str:
-        return f'{self.this_class.get('alias')} - section {self.this_class.get('section')}'
+        return f'{self.info.get('alias')} - section {self.info.get('section')}'

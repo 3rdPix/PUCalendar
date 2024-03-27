@@ -2,7 +2,7 @@ from PyQt6.QtCore import QObject, pyqtSignal
 from os.path import exists
 from components.paths import Paths
 from components.schedule import PUCWeek
-from components.course import Course, search_for_courses
+from components.course import PUClass, search_for_puclasses
 from components.database import PUCalendarDatabaseHandler as Db
 import json
 import datetime
@@ -24,9 +24,11 @@ def get_year_and_value() -> tuple[str]:
 
 class MainLogic(QObject):
 
-    SGclass_search_result: pyqtSignal = pyqtSignal(list)
-    SGclass_creation_status: pyqtSignal = pyqtSignal(bool, str)
-    SGloaded_class: pyqtSignal = pyqtSignal(dict)
+    # Signals should start with SG identifier
+
+    SGpuclass_search_result: pyqtSignal = pyqtSignal(list)
+    SGpuclass_creation_status: pyqtSignal = pyqtSignal(bool, str)
+    SGloaded_puclass: pyqtSignal = pyqtSignal(dict)
 
     def __init__(self) -> None:
         super().__init__()
@@ -51,7 +53,7 @@ class MainLogic(QObject):
         if self.user is None: self.user = self.db.create_standard_user()
 
         # create current user courses
-        [self.courses.add(Course(**course)) for course in \
+        [self.puclasses.add(PUClass(**puclass)) for puclass in \
             self.db.get_courses(self.user.get('id'))]
 
 
@@ -63,15 +65,16 @@ class MainLogic(QObject):
         """Handles the closing event of the app"""
         pass
     
-    def RQsearch_for_class(self, search_query: str) -> None:
+    def RQsearch_for_puclass(self, search_query: str) -> None:
         """Receives the request to search for a new class"""
         if len(search_query) < 3: return
-        self.current_search_result = search_for_courses(
+        self.current_search_result = search_for_puclasses(
             search_query, *get_year_and_value())
-        self.send_class_search_result()
+        self.send_puclass_search_result()
 
-    def RQcreate_new_class(self, index: int, alias: str, color: str) -> None:
-        self.create_new_class_from_web(self.current_search_result[index], alias, color)
+    def RQcreate_new_puclass(self, index: int, alias: str, color: str) -> None:
+        self.create_new_puclass_from_web(
+            self.current_search_result[index], alias, color)
 
 
 
@@ -84,15 +87,16 @@ class MainLogic(QObject):
     def create_attributes(self) -> None:
         self.week: PUCWeek = PUCWeek(self.parameters.get('block_params'))
         self.db: Db = Db(Paths.get('session_db'))
-        self.courses: dict = {}
+        self.puclasses: dict = {}
         self.current_search_result: list[dict] | None = None
 
-    def create_new_class_from_web(self, web_dict: dict, alias: str, color: str) -> None:
-        if nrc := web_dict.get('nrc') in self.courses.keys():
-            return self.send_class_creation_status(False, 'already')
-        self.courses[nrc] = (puclass := Course(alias, color, **web_dict))
-        self.send_class_creation_status(True, 'OK')
-        self.send_loaded_class(puclass.this_class)
+    def create_new_puclass_from_web(self, web_dict: dict,
+                                  alias: str, color: str) -> None:
+        if nrc := web_dict.get('nrc') in self.puclasses.keys():
+            return self.send_puclass_creation_status(False, 'already')
+        self.puclasses[nrc] = (puclass := PUClass(alias, color, **web_dict))
+        self.send_puclass_creation_status(True, 'OK')
+        self.send_loaded_puclass(puclass.info)
 
 
 
@@ -101,19 +105,19 @@ class MainLogic(QObject):
     ###                  Local senders                    ###
     #########################################################
 
-    def send_class_search_result(self) -> None:
-        self.SGclass_search_result.emit(
-            [f'{} - Sección {} ({})'.format(
+    def send_puclass_search_result(self) -> None:
+        self.SGpuclass_search_result.emit(
+            ['{} - Sección {} ({})'.format(
                 course.get("name"),
                 course.get("section"),
                 course.get("code")) 
             for course in self.current_search_result])
         
-    def send_class_creation_status(self, status: bool, reason: str) -> None:
-        self.SGclass_creation_status.emit(status, reason)
+    def send_puclass_creation_status(self, status: bool, reason: str) -> None:
+        self.SGpuclass_creation_status.emit(status, reason)
 
-    def send_loaded_class(self, puclass: dict) -> None:
-        self.SGloaded_class.emit(puclass)
+    def send_loaded_puclass(self, puclass: dict) -> None:
+        self.SGloaded_puclass.emit(puclass)
 
 
     #########################################################
@@ -121,7 +125,7 @@ class MainLogic(QObject):
     #########################################################
 
     def printCourses(self) -> None:
-        [print(f'\n{curso}') for curso in self.courses]
+        [print(f'\n{curso}') for curso in self.puclasses]
 
     
 

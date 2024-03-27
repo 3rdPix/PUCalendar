@@ -4,7 +4,7 @@ from PyQt6.QtGui import QKeyEvent, QPixmap, QScreen, QColor, QFontMetrics
 from qfluentwidgets import ColorPickerButton,ListWidget, LineEdit, CaptionLabel ,MessageBoxBase, FlowLayout, TitleLabel, ScrollArea, SubtitleLabel, setFont, CommandBar, Action, FluentIcon as FIF
 from qfluentwidgets.components.widgets.card_widget import CardWidget, CardSeparator, ElevatedCardWidget
 from components.paths import Paths
-from components.course import Course
+from components.course import PUClass
 
 
 class OpacityAniStackedWidget(QStackedWidget):
@@ -62,17 +62,20 @@ class OpacityAniStackedWidget(QStackedWidget):
 
 
 class CoursesInterface(QFrame):
+    """Class that represents the courses tab"""
 
-    def __init__(self, text: str, parent=None):
+
+
+    def __init__(self, parent=None):
         super().__init__(parent=parent)
+        self.setObjectName('courses_tab')
+        self._init_UI()
+
         self.loaded_courses = {}
 
         self.newclass_search_interface = NewClassInterface(self.parent())
         self.newclass_search_interface.hide()
         
-        self.command_bar = CommandBar()
-        self.command_bar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
-        self.command_bar.addActions(self.create_commandBar_actions())
         self.information_stack = InformationInterface()
 
         layout = QVBoxLayout(self)
@@ -80,10 +83,15 @@ class CoursesInterface(QFrame):
         layout.addWidget(CardSeparator())
         layout.addWidget(self.information_stack, Qt.AlignmentFlag.AlignCenter)
 
-        self.setObjectName(text.replace(' ', '-'))
+        self.setObjectName('courses_tab')
         
+    def _init_UI(self) -> None:
+        command_bar = CommandBar(parent=self)
+        command_bar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
+        command_bar.addActions(self.create_command_bar_actions())
+        pass
 
-    def create_commandBar_actions(self) -> list[Action]:
+    def create_command_bar_actions(self) -> list[Action]:
         actions = list()
         add_new = Action(FIF.ADD, 'Añadir nuevo')
         add_new.triggered.connect(self.newclass_search_interface.show)
@@ -96,8 +104,8 @@ class CoursesInterface(QFrame):
         actions.append(set_scale)
         return actions
 
-    def add_new(self, course: Course) -> None:
-        self.loaded_courses[course.this_class.get('nrc')] = (box := CourseSummaryBox(course))
+    def add_new(self, course: PUClass) -> None:
+        self.loaded_courses[course.info.get('nrc')] = (box := CourseSummaryBox(course))
         self.information_stack.load_course(box)
         self.information_stack.setCurrentIndex(1)
 
@@ -110,27 +118,27 @@ class CoursesInterface(QFrame):
 
 class CourseSummaryBox(ElevatedCardWidget):
 
-    def __init__(self, course: Course, parent=None):
+    def __init__(self, course: PUClass, parent=None):
         super().__init__(parent)
         self.setFixedSize(200, 200)
-        self.alias_label = TitleLabel(course.this_class.get('alias'))
+        self.alias_label = TitleLabel(course.info.get('alias'))
         self.alias_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.alias_label.setStyleSheet(
             f'QLabel{{ font: italic }}'
         )
         self.alias_label.setWordWrap(True)
-        self.name_label = SubtitleLabel(course.this_class.get('name'))
+        self.name_label = SubtitleLabel(course.info.get('name'))
         self.name_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         self.name_label.setWordWrap(True)
-        self.code_label = SubtitleLabel(course.this_class.get('code'))
+        self.code_label = SubtitleLabel(course.info.get('code'))
         self.code_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
 
         color_box = QFrame()
         color_box.setFixedSize(15, 15)
         color_box.setStyleSheet(
-            f'QFrame{{ background-color:{course.this_class.get("color")} }}')
+            f'QFrame{{ background-color:{course.info.get("color")} }}')
         
         distribution = QVBoxLayout(self)
         lateral_1 = QHBoxLayout()

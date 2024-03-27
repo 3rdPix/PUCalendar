@@ -58,7 +58,6 @@ class MainWindow(MSFluentWindow):
         bubble = TeachingTipView(title=AppText.APP_DESCRIPTION_TITLE,
                                  content=AppText.APP_DESCRIPTION, image=image,
                                  isClosable=True, tailPosition=tail_position)
-        
         github_button = PushButton(FIF.GITHUB, 'GitHub')
         bubble.addWidget(github_button, align=Qt.AlignmentFlag.AlignRight)
         panel = TeachingTip.make(bubble, self.navigationInterface, 

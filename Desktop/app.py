@@ -35,7 +35,7 @@ class PUCalendar(QApplication):
         # window
         self.mainWindow = MainWindow()
 
-        self.connect_signals()
+        # self.connect_signals()
 
         # self.init_game_music()
         self.mainWindow.show()
@@ -63,9 +63,9 @@ class PUCalendar(QApplication):
         # newclass selection
         self.mainWindow.courses_interface.newclass_search_interface.newclass_fromWeb.connect(
             self.logic.newclass_fromWeb)
-        
+        open()
         # newclass show DANGER
         self.logic.toFront_loadCourse.connect(
             self.mainWindow.courses_interface.add_new)
-        
+                
 
