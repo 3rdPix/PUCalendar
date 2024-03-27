@@ -1,6 +1,6 @@
 # VERY LIKELY TO BE DEPRECATED
-from enum import Enum
 import json
+from enum import Enum
 
 
 class AppText(Enum):
@@ -8,9 +8,6 @@ class AppText(Enum):
     Enum class that contains the text to be displayed in the app
     Must call `load_text()` first.
     """
-
-    APP_DESCRIPTION: str
-    APP_DESCRIPTION_TITLE: str
 
     @staticmethod
     def load_text(json_file: str) -> None:

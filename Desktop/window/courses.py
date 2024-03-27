@@ -1,10 +1,39 @@
-from PyQt6.QtWidgets import QListWidgetItem, QGraphicsOpacityEffect, QFrame, QHBoxLayout, QVBoxLayout, QWidget, QLabel, QStackedWidget
-from PyQt6.QtCore import Qt, QPropertyAnimation, QAbstractAnimation, pyqtSignal
-from PyQt6.QtGui import QKeyEvent, QPixmap, QScreen, QColor, QFontMetrics
-from qfluentwidgets import ColorPickerButton,ListWidget, LineEdit, CaptionLabel ,MessageBoxBase, FlowLayout, TitleLabel, ScrollArea, SubtitleLabel, setFont, CommandBar, Action, FluentIcon as FIF
-from qfluentwidgets.components.widgets.card_widget import CardWidget, CardSeparator, ElevatedCardWidget
-from components.paths import Paths
 from components.course import PUClass
+from components.paths import Paths
+from components.text import AppText
+from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtCore import QAbstractAnimation
+from PyQt6.QtCore import QPropertyAnimation
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QColor
+from PyQt6.QtGui import QFontMetrics
+from PyQt6.QtGui import QKeyEvent
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtGui import QScreen
+from PyQt6.QtWidgets import QFrame
+from PyQt6.QtWidgets import QGraphicsOpacityEffect
+from PyQt6.QtWidgets import QHBoxLayout
+from PyQt6.QtWidgets import QLabel
+from PyQt6.QtWidgets import QListWidgetItem
+from PyQt6.QtWidgets import QStackedWidget
+from PyQt6.QtWidgets import QVBoxLayout
+from PyQt6.QtWidgets import QWidget
+from qfluentwidgets import Action
+from qfluentwidgets import CaptionLabel
+from qfluentwidgets import ColorPickerButton
+from qfluentwidgets import CommandBar
+from qfluentwidgets import FlowLayout
+from qfluentwidgets import FluentIcon as FIF
+from qfluentwidgets import LineEdit
+from qfluentwidgets import ListWidget
+from qfluentwidgets import MessageBoxBase
+from qfluentwidgets import ScrollArea
+from qfluentwidgets import setFont
+from qfluentwidgets import SubtitleLabel
+from qfluentwidgets import TitleLabel
+from qfluentwidgets.components.widgets.card_widget import CardSeparator
+from qfluentwidgets.components.widgets.card_widget import CardWidget
+from qfluentwidgets.components.widgets.card_widget import ElevatedCardWidget
 
 
 class OpacityAniStackedWidget(QStackedWidget):
@@ -61,59 +90,114 @@ class OpacityAniStackedWidget(QStackedWidget):
         self.setCurrentIndex(self.indexOf(w))
 
 
-class CoursesInterface(QFrame):
+class MyPUClassesTab(QFrame):
     """Class that represents the courses tab"""
-
-
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.setObjectName('courses_tab')
+        self._init_attr()
         self._init_UI()
 
-        self.loaded_courses = {}
+    #########################################################
+    ###                     Handles                       ###
+    #########################################################
 
+    def _init_attr(self) -> None:
+        self.vertical_layout: QVBoxLayout = QVBoxLayout(self)
         self.newclass_search_interface = NewClassInterface(self.parent())
-        self.newclass_search_interface.hide()
-        
-        self.information_stack = InformationInterface()
-
-        layout = QVBoxLayout(self)
-        layout.addWidget(self.command_bar)
-        layout.addWidget(CardSeparator())
-        layout.addWidget(self.information_stack, Qt.AlignmentFlag.AlignCenter)
-
-        self.setObjectName('courses_tab')
         
     def _init_UI(self) -> None:
+        # barra de usos
         command_bar = CommandBar(parent=self)
-        command_bar.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
-        command_bar.addActions(self.create_command_bar_actions())
-        pass
+        command_bar.setToolButtonStyle(
+            Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
+        command_bar.addActions(self._create_command_bar_actions())
+        self.vertical_layout.addWidget(command_bar)
 
-    def create_command_bar_actions(self) -> list[Action]:
+        # separador visual
+        self.vertical_layout.addWidget(CardSeparator(self.vertical_layout))
+
+        # panel de cursos
+        self.information_panel = InformationPanel(self)
+        self.vertical_layout.addWidget(self.information_panel)
+
+        # panel 1
+        no_puclass_layer = QWidget(self.information_panel)
+        icon = QLabel(no_puclass_layer)
+        icon.setPixmap(QPixmap(Paths.get('no_book')))
+        # icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        subtitle = SubtitleLabel(AppText.NO_CLASS_CREATED, no_puclass_layer)
+        # subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout = QVBoxLayout(no_puclass_layer)
+        layout.addStretch()
+        layout.addWidget(icon)
+        layout.addWidget(subtitle)
+        layout.addStretch()
+        self.information_panel.addWidget(no_puclass_layer)
+
+        # panel 2
+        all_puclasses_layer = ScrollArea(self.information_panel)
+        all_puclasses_layer.setWidgetResizable(True)
+        # all_puclasses_layer.setFrameShape(QFrame.Shape.NoFrame)
+        # all_puclasses_layer.setObjectName('scrollarea_layer')
+        widget_obejct = QWidget(all_puclasses_layer)
+        self.all_puclasses_panel = FlowLayout(widget_obejct)
+        all_puclasses_layer.setWidget(widget_obejct)
+        self.information_panel.addWidget(all_puclasses_layer)
+
+        # panel 3 ESTOY AQUÍ
+
+    def _create_command_bar_actions(self) -> list[Action]:
         actions = list()
-        add_new = Action(FIF.ADD, 'Añadir nuevo')
-        add_new.triggered.connect(self.newclass_search_interface.show)
+
+        add_new = Action(FIF.ADD, AppText.CB_ADD_NEW_PUCLASS)
+        add_new.triggered.connect(self._CB_add_new_puclass)
         actions.append(add_new)
-        delete_class = Action(FIF.DELETE, 'Eliminar curso')
-        delete_class.triggered.connect(self.delete_class)
-        actions.append(delete_class)
-        set_scale = Action(FIF.IOT, 'Configurar escala')
-        set_scale.triggered.connect(self.set_scale)
+
+        delete_puclass = Action(FIF.DELETE, AppText.CB_DELETE_PUCLASS)
+        delete_puclass.triggered.connect(self._CB_delete_puclass)
+        actions.append(delete_puclass)
+
+        edit_puclass = Action(FIF.EDIT, AppText.CB_EDIT_PUCLASS)
+        edit_puclass.triggered.connect(self._CB_edit_puclass)
+        actions.append(edit_puclass)
+
+        set_scale = Action(FIF.IOT, AppText.CB_EDIT_SCALE)
+        set_scale.triggered.connect(self._CB_edit_scale)
         actions.append(set_scale)
+
         return actions
 
+    def _CB_add_new_puclass(self) -> None:
+        pass
+
+    def _CB_delete_puclass(self) -> None:
+        pass
+
+    def _CB_edit_puclass(self) -> None:
+        pass
+
+    def _CB_edit_scale(self) -> None:
+        pass
+
+    #########################################################
+    ###                     Listeners                     ###
+    #########################################################
+
     def add_new(self, course: PUClass) -> None:
-        self.loaded_courses[course.info.get('nrc')] = (box := CourseSummaryBox(course))
+        self.loaded_courses[course.info.get('nrc')] = \
+            (box := CourseSummaryBox(course))
         self.information_stack.load_course(box)
         self.information_stack.setCurrentIndex(1)
 
-    def delete_class(self) -> None:
-        pass
+    #########################################################
+    ###                     Senders                       ###
+    #########################################################
 
-    def set_scale(self) -> None:
-        pass
+    
+
+
 
 
 class CourseSummaryBox(ElevatedCardWidget):
@@ -152,7 +236,7 @@ class CourseSummaryBox(ElevatedCardWidget):
         distribution.addWidget(CardSeparator())
 
 
-class InformationInterface(OpacityAniStackedWidget):
+class InformationPanel(OpacityAniStackedWidget):
     """
     Three-way stacked widget to show information about courses
     """

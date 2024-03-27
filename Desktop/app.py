@@ -1,21 +1,38 @@
-import sys
-from typing import List
-from PyQt6 import QtMultimedia
-from PyQt6.QtCore import Qt, QUrl
-from PyQt6.QtGui import QIcon, QDesktopServices, QPixmap
-from PyQt6.QtWidgets import QApplication, QFrame, QHBoxLayout
-from qfluentwidgets import (TeachingTip, PushButton, TeachingTipView, TeachingTipTailPosition, NavigationItemPosition, MessageBox, setTheme, Theme, MSFluentWindow,
-                            NavigationAvatarWidget, qrouter, SubtitleLabel, setFont)
-from qfluentwidgets import FluentIcon as FIF
-from window.home import HomeInterface
-from typing import List
 import json
+import sys
 from enum import Enum
 from os.path import join
+from typing import List
+
+from PyQt6 import QtMultimedia
+from PyQt6.QtCore import Qt
+from PyQt6.QtCore import QUrl
+from PyQt6.QtGui import QDesktopServices
+from PyQt6.QtGui import QIcon
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtWidgets import QApplication
+from PyQt6.QtWidgets import QFrame
+from PyQt6.QtWidgets import QHBoxLayout
+from qfluentwidgets import FluentIcon as FIF
+from qfluentwidgets import MessageBox
+from qfluentwidgets import MSFluentWindow
+from qfluentwidgets import NavigationAvatarWidget
+from qfluentwidgets import NavigationItemPosition
+from qfluentwidgets import PushButton
+from qfluentwidgets import qrouter
+from qfluentwidgets import setFont
+from qfluentwidgets import setTheme
+from qfluentwidgets import SubtitleLabel
+from qfluentwidgets import TeachingTip
+from qfluentwidgets import TeachingTipTailPosition
+from qfluentwidgets import TeachingTipView
+from qfluentwidgets import Theme
+
+from components.main_logic import MainLogic
 from components.paths import Paths
 from components.text import AppText
+from window.home import HomeInterface
 from window.main_window import MainWindow
-from components.main_logic import MainLogic
 
 class PUCalendar(QApplication):
     """
@@ -67,5 +84,3 @@ class PUCalendar(QApplication):
         # newclass show DANGER
         self.logic.toFront_loadCourse.connect(
             self.mainWindow.courses_interface.add_new)
-                
-

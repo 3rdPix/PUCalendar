@@ -1,8 +1,25 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QFrame, QHBoxLayout, QGridLayout
-from PyQt6.QtGui import QPaintEvent, QPixmap, QPainter, QLinearGradient, QColor, QBrush, QPainterPath, QResizeEvent
-from PyQt6.QtCore import Qt, QRectF
-from qfluentwidgets import isDarkTheme, ScrollArea, FlowLayout, SubtitleLabel, SmoothScrollArea
 from components.summary_box import InfoBox
+from PyQt6.QtCore import QRectF
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QBrush
+from PyQt6.QtGui import QColor
+from PyQt6.QtGui import QLinearGradient
+from PyQt6.QtGui import QPainter
+from PyQt6.QtGui import QPainterPath
+from PyQt6.QtGui import QPaintEvent
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtGui import QResizeEvent
+from PyQt6.QtWidgets import QFrame
+from PyQt6.QtWidgets import QGridLayout
+from PyQt6.QtWidgets import QHBoxLayout
+from PyQt6.QtWidgets import QLabel
+from PyQt6.QtWidgets import QVBoxLayout
+from PyQt6.QtWidgets import QWidget
+from qfluentwidgets import FlowLayout
+from qfluentwidgets import isDarkTheme
+from qfluentwidgets import ScrollArea
+from qfluentwidgets import SmoothScrollArea
+from qfluentwidgets import SubtitleLabel
 
 class TimersInterface(ScrollArea):
 
@@ -16,4 +33,4 @@ class TimersInterface(ScrollArea):
         self.setWidgetResizable(True)
         self.setFrameShape(QFrame.Shape.NoFrame)
 
-        # 
+        #

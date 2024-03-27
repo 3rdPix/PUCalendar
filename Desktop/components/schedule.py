@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
 
 class PUCDay:
 
@@ -79,4 +80,3 @@ class PUCWeek:
                 else: _me += 'Vacío\n'
             _me += '\n'
         return _me
-    

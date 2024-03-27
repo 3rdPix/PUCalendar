@@ -1,8 +1,7 @@
 # VERY LIKELY TO BE DEPRECATED
-
-from os.path import join
-from enum import Enum
 import json
+from enum import Enum
+from os.path import join
 
 
 class Paths:

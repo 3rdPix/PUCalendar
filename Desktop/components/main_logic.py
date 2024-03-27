@@ -1,11 +1,14 @@
-from PyQt6.QtCore import QObject, pyqtSignal
+import datetime
+import json
 from os.path import exists
+
+from components.course import PUClass
+from components.course import search_for_puclasses
+from components.database import PUCalendarDatabaseHandler as Db
 from components.paths import Paths
 from components.schedule import PUCWeek
-from components.course import PUClass, search_for_puclasses
-from components.database import PUCalendarDatabaseHandler as Db
-import json
-import datetime
+from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtCore import QObject
 
 # Temporalmente estoy conectando a la base de datos directamente
 # Dentro de poco debe abstraer la funcionalidad de la conexión
@@ -58,7 +61,7 @@ class MainLogic(QObject):
 
 
     #########################################################
-    ###                 Event listeners                   ###
+    ###                     Listeners                     ###
     #########################################################
 
     def app_is_closing(self) -> None:
@@ -81,7 +84,7 @@ class MainLogic(QObject):
 
 
     #########################################################
-    ###                  Local handles                    ###
+    ###                     Handles                       ###
     #########################################################
 
     def create_attributes(self) -> None:
@@ -102,7 +105,7 @@ class MainLogic(QObject):
 
 
     #########################################################
-    ###                  Local senders                    ###
+    ###                     Senders                       ###
     #########################################################
 
     def send_puclass_search_result(self) -> None:
@@ -126,7 +129,3 @@ class MainLogic(QObject):
 
     def printCourses(self) -> None:
         [print(f'\n{curso}') for curso in self.puclasses]
-
-    
-
-    

@@ -1,18 +1,36 @@
 import sys
+from enum import Enum
 from typing import List
 
-from PyQt6.QtCore import Qt, QUrl
-from PyQt6.QtGui import QIcon, QDesktopServices, QKeyEvent, QPixmap
-from PyQt6.QtWidgets import QApplication, QFrame, QHBoxLayout
-from qfluentwidgets import (TeachingTip, PushButton, TeachingTipView, TeachingTipTailPosition, NavigationItemPosition, MessageBox, setTheme, Theme, MSFluentWindow,
-                            NavigationAvatarWidget, qrouter, SubtitleLabel, setFont)
-from qfluentwidgets import FluentIcon as FIF
-from window.home import HomeInterface
-from typing import List
-from enum import Enum
 from components.paths import Paths
 from components.text import AppText
-from window import AgendaInterface, CoursesInterface, CalendarInterface
+from PyQt6.QtCore import Qt
+from PyQt6.QtCore import QUrl
+from PyQt6.QtGui import QDesktopServices
+from PyQt6.QtGui import QIcon
+from PyQt6.QtGui import QKeyEvent
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtWidgets import QApplication
+from PyQt6.QtWidgets import QFrame
+from PyQt6.QtWidgets import QHBoxLayout
+from qfluentwidgets import FluentIcon as FIF
+from qfluentwidgets import MessageBox
+from qfluentwidgets import MSFluentWindow
+from qfluentwidgets import NavigationAvatarWidget
+from qfluentwidgets import NavigationItemPosition
+from qfluentwidgets import PushButton
+from qfluentwidgets import qrouter
+from qfluentwidgets import setFont
+from qfluentwidgets import setTheme
+from qfluentwidgets import SubtitleLabel
+from qfluentwidgets import TeachingTip
+from qfluentwidgets import TeachingTipTailPosition
+from qfluentwidgets import TeachingTipView
+from qfluentwidgets import Theme
+from window import AgendaInterface
+from window import CalendarInterface
+from window import MyPUClassesTab
+from window.home import HomeInterface
 
 class MainWindow(MSFluentWindow):
 
@@ -36,7 +54,7 @@ class MainWindow(MSFluentWindow):
     def init_contents(self) -> None:
         self.home_interface = HomeInterface(self)
         self.agenda_interface = AgendaInterface('Agenda', self)
-        self.courses_interface = CoursesInterface('Cursos', self)
+        self.courses_interface = MyPUClassesTab('Cursos', self)
         self.calendar_interface = CalendarInterface('Calendario', self)
 
     def init_navigation(self) -> None:

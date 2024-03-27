@@ -1,8 +1,29 @@
-from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QFrame, QHBoxLayout, QGridLayout
-from PyQt6.QtGui import QPaintEvent, QPixmap, QPainter, QLinearGradient, QColor, QBrush, QPainterPath, QResizeEvent
-from PyQt6.QtCore import Qt, QRectF
-from qfluentwidgets import isDarkTheme, ScrollArea, FlowLayout, SubtitleLabel, SmoothScrollArea, PrimaryToolButton, FluentIcon as FIF
-from qfluentwidgets import CardWidget, ElevatedCardWidget, HeaderCardWidget
+from PyQt6.QtCore import QRectF
+from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QBrush
+from PyQt6.QtGui import QColor
+from PyQt6.QtGui import QLinearGradient
+from PyQt6.QtGui import QPainter
+from PyQt6.QtGui import QPainterPath
+from PyQt6.QtGui import QPaintEvent
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtGui import QResizeEvent
+from PyQt6.QtWidgets import QFrame
+from PyQt6.QtWidgets import QGridLayout
+from PyQt6.QtWidgets import QHBoxLayout
+from PyQt6.QtWidgets import QLabel
+from PyQt6.QtWidgets import QVBoxLayout
+from PyQt6.QtWidgets import QWidget
+from qfluentwidgets import CardWidget
+from qfluentwidgets import ElevatedCardWidget
+from qfluentwidgets import FlowLayout
+from qfluentwidgets import FluentIcon as FIF
+from qfluentwidgets import HeaderCardWidget
+from qfluentwidgets import isDarkTheme
+from qfluentwidgets import PrimaryToolButton
+from qfluentwidgets import ScrollArea
+from qfluentwidgets import SmoothScrollArea
+from qfluentwidgets import SubtitleLabel
 from qfluentwidgets.components.widgets.card_widget import CardSeparator
 
 

@@ -1,6 +1,8 @@
-from PyQt6.QtWidgets import QFrame, QHBoxLayout
 from PyQt6.QtCore import Qt
-from qfluentwidgets import SubtitleLabel, setFont
+from PyQt6.QtWidgets import QFrame
+from PyQt6.QtWidgets import QHBoxLayout
+from qfluentwidgets import setFont
+from qfluentwidgets import SubtitleLabel
 
 
 class CalendarInterface(QFrame):

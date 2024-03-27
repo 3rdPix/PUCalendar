@@ -1,4 +1,9 @@
 {
     "app_description": "PUCalendar es una aplicación de código abierto diseñada por y para estudiantes con la finlalidad de otorgar una ayuda en la orgranización y registro de todos los quehaceres universitarios.",
-    "app_description_title": "Información de la aplicación"
+    "app_description_title": "Información de la aplicación",
+    "CB_add_new_puclass": "Añadir nuevo",
+    "CB_delete_puclass": "Eliminar curso",
+    "CB_edit_puclass": "Editar curso",
+    "CB_edit_scale": "Editar escala",
+    "No_class_created": "No se han creado cursos aún"
 }
