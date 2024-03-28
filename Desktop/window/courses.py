@@ -93,11 +93,15 @@ class OpacityAniStackedWidget(QStackedWidget):
 class MyPUClassesTab(QFrame):
     """Class that represents the courses tab"""
 
+    SGsearch_for_puclass: pyqtSignal = pyqtSignal(str)
+    SGselect_newclass: pyqtSignal = pyqtSignal(int, str, str)
+
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.setObjectName('courses_tab')
         self._init_attr()
         self._init_UI()
+        self._connect_SG()
 
     #########################################################
     ###                     Handles                       ###
@@ -116,19 +120,19 @@ class MyPUClassesTab(QFrame):
         self.vertical_layout.addWidget(command_bar)
 
         # separador visual
-        self.vertical_layout.addWidget(CardSeparator(self.vertical_layout))
+        self.vertical_layout.addWidget(CardSeparator())
 
         # panel de cursos
-        self.information_panel = InformationPanel(self)
+        self.information_panel = OpacityAniStackedWidget(self)
         self.vertical_layout.addWidget(self.information_panel)
 
         # panel 1
         no_puclass_layer = QWidget(self.information_panel)
         icon = QLabel(no_puclass_layer)
         icon.setPixmap(QPixmap(Paths.get('no_book')))
-        # icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
         subtitle = SubtitleLabel(AppText.NO_CLASS_CREATED, no_puclass_layer)
-        # subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout = QVBoxLayout(no_puclass_layer)
         layout.addStretch()
         layout.addWidget(icon)
@@ -147,6 +151,9 @@ class MyPUClassesTab(QFrame):
         self.information_panel.addWidget(all_puclasses_layer)
 
         # panel 3 ESTOY AQUÍ
+        # placeholder widget
+        placeholder_widget = QWidget(self)
+        self.information_panel.addWidget(placeholder_widget)
 
     def _create_command_bar_actions(self) -> list[Action]:
         actions = list()
@@ -170,7 +177,7 @@ class MyPUClassesTab(QFrame):
         return actions
 
     def _CB_add_new_puclass(self) -> None:
-        pass
+        self.newclass_search_interface.show()
 
     def _CB_delete_puclass(self) -> None:
         pass
@@ -181,175 +188,163 @@ class MyPUClassesTab(QFrame):
     def _CB_edit_scale(self) -> None:
         pass
 
+    def _connect_SG(self) -> None:
+        self.newclass_search_interface.SGsearch_for_puclass.connect(
+            self.search_for_puclass)
+        
+        self.newclass_search_interface.SGselect_puclass.connect(
+            self.send_newclass_selection)
+
     #########################################################
     ###                     Listeners                     ###
     #########################################################
 
-    def add_new(self, course: PUClass) -> None:
-        self.loaded_courses[course.info.get('nrc')] = \
-            (box := CourseSummaryBox(course))
-        self.information_stack.load_course(box)
-        self.information_stack.setCurrentIndex(1)
+    def add_new(self, puclass: dict) -> None:
+        infobox = PUClassInfoBox(**puclass)
+        self.all_puclasses_panel.addWidget(infobox)
+        self.information_panel.setCurrentIndex(1)
+
+    def show_search_results(self, results: list[dict]) -> None:
+        self.newclass_search_interface.show_search_result(results)
 
     #########################################################
     ###                     Senders                       ###
     #########################################################
 
-    
+    def search_for_puclass(self, search_query: str) -> None:
+        self.SGsearch_for_puclass.emit(search_query)
+
+    def send_newclass_selection(self, index: int,
+                                alias: str, color: str) -> None:
+        self.SGselect_newclass.emit(index, alias, color)
 
 
+class PUClassInfoBox(ElevatedCardWidget):
+    """Flotant box to be shown in all_puclasses_panel"""
 
-
-class CourseSummaryBox(ElevatedCardWidget):
-
-    def __init__(self, course: PUClass, parent=None):
+    def __init__(self, alias: str, color: str,
+                 name: str, code: str, section: int, parent=None, **kwargs):
         super().__init__(parent)
-        self.setFixedSize(200, 200)
-        self.alias_label = TitleLabel(course.info.get('alias'))
-        self.alias_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.alias_label.setStyleSheet(
-            f'QLabel{{ font: italic }}'
-        )
-        self.alias_label.setWordWrap(True)
-        self.name_label = SubtitleLabel(course.info.get('name'))
-        self.name_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        self.name_label.setWordWrap(True)
-        self.code_label = SubtitleLabel(course.info.get('code'))
-        self.code_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-
-        color_box = QFrame()
-        color_box.setFixedSize(15, 15)
-        color_box.setStyleSheet(
-            f'QFrame{{ background-color:{course.info.get("color")} }}')
+        # self.setFixedSize(200, 200)
+        layout = QVBoxLayout(self)
         
-        distribution = QVBoxLayout(self)
-        lateral_1 = QHBoxLayout()
-        lateral_1.addStretch()
-        lateral_1.addWidget(color_box)
-        lateral_1.addWidget(self.alias_label)
-        lateral_1.addStretch()
-        distribution.addLayout(lateral_1)
-        distribution.addWidget(self.name_label)
-        distribution.addWidget(self.code_label)
-        distribution.addWidget(CardSeparator())
+        sub_layout_1 = QHBoxLayout()
+        color_box = ColorPickerButton(QColor(color), '', parent=self)
+        alias_label = TitleLabel(text=alias, parent=self)
+        sub_layout_1.addWidget(color_box, Qt.AlignmentFlag.AlignCenter)
+        sub_layout_1.addWidget(alias_label, Qt.AlignmentFlag.AlignCenter)
+        layout.addLayout(sub_layout_1)
 
+        layout.addWidget(CardSeparator())
 
-class InformationPanel(OpacityAniStackedWidget):
-    """
-    Three-way stacked widget to show information about courses
-    """
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.create_no_class_level()
-        self.create_allclasses_level()
-        self.create_singleclass_level()
-
-    def create_no_class_level(self) -> None:
-        self.noclass_panel = QWidget(self)
-        icon = QLabel()
-        icon.setPixmap(QPixmap(Paths.get('no_book')))
-        icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        subtitle = SubtitleLabel('No classes created')
-        subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        layout = QVBoxLayout(self.noclass_panel)
-        layout.addStretch()
-        layout.addWidget(icon)
-        layout.addWidget(subtitle)
-        layout.addStretch()
-        self.addWidget(self.noclass_panel)
-
-    def create_allclasses_level(self) -> None:
-        self.allclass_panel = ScrollArea(self)
-        self.allclass_panel.setObjectName('all_classes')
-        self.allclass_panel.setWidgetResizable(True)
-        self.allclass_panel.setFrameShape(QFrame.Shape.NoFrame)
-
-        self.widget_object = QWidget()
-        self.widget_flow = FlowLayout(self.widget_object)
-        self.allclass_panel.setWidget(self.widget_object)
-        self.addWidget(self.allclass_panel)
-
-    def create_singleclass_level(self) -> None:
-        self.singleclass_panel = QWidget(self)
-        self.addWidget(self.singleclass_panel)
-
-    def load_course(self, box: CourseSummaryBox) -> None:
-        self.widget_flow.addWidget(box)
-        print(box.alias_label.text())
+        description =   CaptionLabel(
+            text=f'({code}-{section} {name})', parent=self)
+        layout.addWidget(description)
 
 class NewClassInterface(MessageBoxBase):
 
-    do_search = pyqtSignal(str)
-    newclass_fromWeb = pyqtSignal(int, str, str)
+    SGsearch_for_puclass = pyqtSignal(str)
+    SGselect_puclass = pyqtSignal(int, str, str)
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.init_UI()
-        self.search_line.returnPressed.connect(self.search_for)
-        self.accepted.connect(self.send_selection)
+        self.hide()
+        self._init_UI() # creates interface elements
+        self._connect_signals() # connect signals
 
-    def init_UI(self) -> None:
-        search_label = CaptionLabel('Buscar curso:')
+    #########################################################
+    ###                     Handles                       ###
+    #########################################################
+
+    def _init_UI(self) -> None:
+        # Search block
+        sub_layout1 = QHBoxLayout()
+        search_label = CaptionLabel(text=AppText.NC_SEARCH)
+        self.search_linedit = LineEdit(self)
+        self.search_linedit.setClearButtonEnabled(True)
+        self.search_linedit.setPlaceholderText(AppText.NC_SEARCH_PLACEHOLDER)
+        sub_layout1.addWidget(search_label)
+        sub_layout1.addWidget(self.search_linedit)
+        self.viewLayout.addLayout(sub_layout1)
+
+        # Results block
+        self.search_result_view = ListWidget(self)
+        self.viewLayout.addWidget(self.search_result_view)
+
+        # Other parameters
+        sub_layout2 = QHBoxLayout()
+        alias_label = CaptionLabel(text=AppText.NC_ALIAS)
+        self.alias_linedit = LineEdit(self)
+        self.alias_linedit.setClearButtonEnabled(True)
+        self.alias_linedit.setPlaceholderText(AppText.NC_ALIAS_PLACEHOLDER)
+        self.alias_linedit.setEnabled(False)
+        self.alias_linedit.setMaxLength(10)
+        color_label = CaptionLabel(AppText.NC_COLOR)
+        self.color_selector = ColorPickerButton(
+            QColor('#5010aaa2'), AppText.NC_COLOR_TITLE)
+        self.color_selector.setEnabled(False)
+        sub_layout2.addWidget(alias_label)
+        sub_layout2.addWidget(self.alias_linedit)
+        sub_layout2.addWidget(color_label)
+        sub_layout2.addWidget(self.color_selector)
+        self.viewLayout.addLayout(sub_layout2)
+
+        # final text
+        self.yesButton.setText(AppText.NC_CONFIRM)
+        self.yesButton.setEnabled(False)
+        self.cancelButton.setText(AppText.NC_CANCEL)
+
+    def _connect_signals(self) -> None:
+        self.search_linedit.returnPressed.connect(
+            self.search_for_puclass)
         
-        self.search_line = LineEdit()
-        self.search_line.setClearButtonEnabled(True)
-        self.search_line.setPlaceholderText('Ingresar nombre o sigla')
-        self.list_view = ListWidget()
-        alias_label = CaptionLabel('Alias:')
-        self.alias_line = LineEdit()
-        self.alias_line.setClearButtonEnabled(True)
-        self.alias_line.setPlaceholderText('Cómo te refieres a este ramo')
-        self.alias_line.setEnabled(False)
-        self.alias_line.setMaxLength(10)
-        color_label = CaptionLabel('Color:')
-        self.color_box = ColorPickerButton(QColor("#5012aaa2"), 'color_btn')
-        self.color_box.setFixedSize(20, 20)
-        self.color_box.setEnabled(False)
-        self.list_view.itemClicked.connect(
-            lambda: [self.yesButton.setEnabled(True),
-                     self.alias_line.setEnabled(True),
-                     self.color_box.setEnabled(True)])
-        lay = QHBoxLayout()
-        lay.addWidget(search_label)
-        lay.addWidget(self.search_line)
-        lay2 = QHBoxLayout()
-        lay2.addWidget(alias_label)
-        lay2.addWidget(self.alias_line)
-        lay2.addWidget(color_label)
-        lay2.addWidget(self.color_box)
-        self.viewLayout.addLayout(lay)
-        self.viewLayout.addWidget(self.list_view)
-        self.viewLayout.addLayout(lay2)
-        self.yesButton.setDisabled(True)
-        self.yesButton.setText('Confirmar')
-        self.cancelButton.setText('Cancelar')
+        self.search_result_view.itemClicked.connect(
+            self._enable_buttons)
+        
+        self.alias_linedit.textChanged.connect(
+            self._check_selection_completed)
+
+        self.accepted.connect(
+            self.send_selection)
+
+    def _enable_buttons(self) -> None:
+        self.alias_linedit.setEnabled(True)
+        self.color_selector.setEnabled(True)
+
+    def _clearinterface(self) -> None:
+        self.search_result_view.clear()
+        self.search_linedit.clear()
+        self.alias_linedit.clear()
+        self.alias_linedit.setEnabled(False)
+        self.color_selector.setEnabled(False)
+        self.yesButton.setEnabled(False)
+
+    def _check_selection_completed(self) -> None:
+        if self.search_result_view.currentRow() == -1: return
+        if self.alias_linedit.text() == '':
+            self.yesButton.setEnabled(False)
+            return
+        self.yesButton.setEnabled(True)
+
+    #########################################################
+    ###                     Senders                       ###
+    #########################################################
 
     def send_selection(self) -> None:
-        self.newclass_fromWeb.emit(
-            self.list_view.currentRow(),
-            self.alias_line.text(),
-            self.color_box.color.name()
-        )
-        self.clearinterface()
+        self.SGselect_puclass.emit(
+            self.search_result_view.currentRow(),
+            self.alias_linedit.text(),
+            self.color_selector.color.name())
+        self._clearinterface()
 
-    def search_for(self) -> None:
-        self.list_view.setCurrentRow(-1)
-        self.yesButton.setEnabled(False)
-        self.do_search.emit(self.search_line.text())
+    def search_for_puclass(self) -> None:
+        self.search_result_view.setCurrentRow(-1)
+        self.SGsearch_for_puclass.emit(self.search_linedit.text())
+    
+    #########################################################
+    ###                     Listeners                     ###
+    #########################################################
         
-        
-
     def show_search_result(self, result_list: list[str]) -> None:
-        self.list_view.clear()
-        self.list_view.addItems(result_list)
-
-    def clearinterface(self) -> None:
-        self.list_view.clear()
-        self.search_line.clear()
-        self.alias_line.clear()
-        self.alias_line.setEnabled(False)
-        self.color_box.setEnabled(False)
-        self.yesButton.setEnabled(False)
+        self.search_result_view.clear()
+        self.search_result_view.addItems(result_list)    

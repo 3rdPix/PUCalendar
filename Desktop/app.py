@@ -52,7 +52,7 @@ class PUCalendar(QApplication):
         # window
         self.mainWindow = MainWindow()
 
-        # self.connect_signals()
+        self.connect_signals()
 
         # self.init_game_music()
         self.mainWindow.show()
@@ -69,18 +69,18 @@ class PUCalendar(QApplication):
 
     def connect_signals(self) -> None:
         
-        # newclass creation search query
-        self.mainWindow.courses_interface.newclass_search_interface.do_search.connect(
-            self.logic.newclass_search)
+        # search for puclass
+        self.mainWindow.courses_interface.SGsearch_for_puclass.connect(
+            self.logic.RQsearch_for_puclass)
         
-        # newclass creation search result
-        self.logic.search_result.connect(
-            self.mainWindow.courses_interface.newclass_search_interface.show_search_result)
-
-        # newclass selection
-        self.mainWindow.courses_interface.newclass_search_interface.newclass_fromWeb.connect(
-            self.logic.newclass_fromWeb)
-        open()
-        # newclass show DANGER
-        self.logic.toFront_loadCourse.connect(
+        # send search results
+        self.logic.SGpuclass_search_result.connect(
+            self.mainWindow.courses_interface.show_search_results)
+        
+        # send newclass selection
+        self.mainWindow.courses_interface.SGselect_newclass.connect(
+            self.logic.RQcreate_new_puclass)
+        
+        # receive creation
+        self.logic.SGloaded_puclass.connect(
             self.mainWindow.courses_interface.add_new)

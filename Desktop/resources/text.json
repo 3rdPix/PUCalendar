@@ -5,5 +5,13 @@
     "CB_delete_puclass": "Eliminar curso",
     "CB_edit_puclass": "Editar curso",
     "CB_edit_scale": "Editar escala",
-    "No_class_created": "No se han creado cursos aún"
+    "No_class_created": "No se han creado cursos aún",
+    "NC_search": "Buscar curso:",
+    "NC_search_placeholder": "Ingresar nombre o sigla",
+    "NC_alias": "Alias:",
+    "NC_alias_placeholder": "Cómo te refieres a este curso",
+    "NC_color": "Color:",
+    "NC_color_title": "Elige un color para identificar al ramo",
+    "NC_confirm": "Confirmar",
+    "NC_cancel": "Cancelar" 
 }

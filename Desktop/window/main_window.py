@@ -54,7 +54,7 @@ class MainWindow(MSFluentWindow):
     def init_contents(self) -> None:
         self.home_interface = HomeInterface(self)
         self.agenda_interface = AgendaInterface('Agenda', self)
-        self.courses_interface = MyPUClassesTab('Cursos', self)
+        self.courses_interface = MyPUClassesTab(self)
         self.calendar_interface = CalendarInterface('Calendario', self)
 
     def init_navigation(self) -> None:
