@@ -1,10 +1,11 @@
 from components.course import PUClass
 from components.paths import Paths
-from components.text import AppText
-from PyQt6.QtCore import pyqtSignal
+from components.text import AppText as AT
+from PyQt6.QtCore import QRect, pyqtSignal
 from PyQt6.QtCore import QAbstractAnimation
 from PyQt6.QtCore import QPropertyAnimation
 from PyQt6.QtCore import Qt
+from PyQt6.QtCore import QEasingCurve
 from PyQt6.QtGui import QColor
 from PyQt6.QtGui import QFontMetrics
 from PyQt6.QtGui import QKeyEvent
@@ -31,6 +32,10 @@ from qfluentwidgets import ScrollArea
 from qfluentwidgets import setFont
 from qfluentwidgets import SubtitleLabel
 from qfluentwidgets import TitleLabel
+from qfluentwidgets import PrimaryToolButton
+from qfluentwidgets import TransparentToolButton
+from qfluentwidgets import PlainTextEdit
+from qfluentwidgets import TreeWidget
 from qfluentwidgets.components.widgets.card_widget import CardSeparator
 from qfluentwidgets.components.widgets.card_widget import CardWidget
 from qfluentwidgets.components.widgets.card_widget import ElevatedCardWidget
@@ -102,6 +107,7 @@ class MyPUClassesTab(QFrame):
         self._init_attr()
         self._init_UI()
         self._connect_SG()
+        self.information_panel.setCurrentIndex(2)
 
     #########################################################
     ###                     Handles                       ###
@@ -127,50 +133,101 @@ class MyPUClassesTab(QFrame):
         self.vertical_layout.addWidget(self.information_panel)
 
         # panel 1
+        self.information_panel.addWidget(self._create_layer_1())
+
+        # panel 2
+        widget, self.all_puclasses_panel = self._create_layer_2()
+        self.information_panel.addWidget(widget)
+
+        # panel 3
+        self.information_panel.addWidget(self._create_layer_3())
+
+    def _create_layer_1(self) -> QWidget:
         no_puclass_layer = QWidget(self.information_panel)
         icon = QLabel(no_puclass_layer)
         icon.setPixmap(QPixmap(Paths.get('no_book')))
         icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        subtitle = SubtitleLabel(AppText.NO_CLASS_CREATED, no_puclass_layer)
+        subtitle = SubtitleLabel(AT.NO_CLASS_CREATED, no_puclass_layer)
         subtitle.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout = QVBoxLayout(no_puclass_layer)
         layout.addStretch()
         layout.addWidget(icon)
         layout.addWidget(subtitle)
         layout.addStretch()
-        self.information_panel.addWidget(no_puclass_layer)
+        return no_puclass_layer
 
-        # panel 2
+    def _create_layer_2(self) -> tuple[QWidget]:
         all_puclasses_layer = ScrollArea(self.information_panel)
         all_puclasses_layer.setWidgetResizable(True)
-        # all_puclasses_layer.setFrameShape(QFrame.Shape.NoFrame)
+        all_puclasses_layer.setFrameShape(QFrame.Shape.NoFrame)
         # all_puclasses_layer.setObjectName('scrollarea_layer')
         widget_obejct = QWidget(all_puclasses_layer)
-        self.all_puclasses_panel = FlowLayout(widget_obejct)
+        all_puclasses_panel = FlowLayout(widget_obejct, needAni=True)
+        all_puclasses_panel.ease = QEasingCurve.Type.OutExpo
+        all_puclasses_panel.setAlignment(Qt.AlignmentFlag.AlignCenter)
         all_puclasses_layer.setWidget(widget_obejct)
-        self.information_panel.addWidget(all_puclasses_layer)
+        return all_puclasses_layer, all_puclasses_panel
 
-        # panel 3 ESTOY AQUÍ
-        # placeholder widget
-        placeholder_widget = QWidget(self)
-        self.information_panel.addWidget(placeholder_widget)
+    def _create_layer_3(self) -> QWidget:
+        layer_widget = QWidget(self.information_panel)
+        layout = QVBoxLayout(layer_widget)
+
+        return_button = PrimaryToolButton(FIF.BACK_TO_WINDOW, parent=self)
+        layout.addWidget(return_button, Qt.AlignmentFlag.AlignRight)
+
+        sublayout_top = QHBoxLayout()
+        
+        description_panel = CardWidget(layer_widget)
+        description_layout = QVBoxLayout(description_panel)
+        description_title = TitleLabel(text=AT.DESCRIPTOR_DESCRIPTION, 
+                                       parent=description_panel)
+        description_edit_button = TransparentToolButton(
+            FIF.EDIT, parent=description_panel)
+        description_head_sublayout = QHBoxLayout()
+        description_head_sublayout.addWidget(description_title)
+        description_head_sublayout.addWidget(description_edit_button, 
+                                             Qt.AlignmentFlag.AlignRight)
+        description_layout.addLayout(description_head_sublayout)
+        description_layout.addWidget(CardSeparator())
+        description_body = PlainTextEdit(description_panel)
+        description_layout.addWidget(description_body)
+        sublayout_top.addWidget(description_panel)
+
+        pendant_panel = CardWidget(layer_widget)
+        pendant_layout = QVBoxLayout(pendant_panel)
+        pendant_title = TitleLabel(text=AT.DESCRIPTOR_PENDANT,
+                                   parent=pendant_panel)
+        pendant_edit_button = TransparentToolButton(
+            FIF.EDIT, parent=pendant_panel)
+        pendant_head_sublayout = QHBoxLayout()
+        pendant_head_sublayout.addWidget(pendant_title)
+        pendant_head_sublayout.addWidget(pendant_edit_button,
+                                         Qt.AlignmentFlag.AlignRight)
+        pendant_layout.addLayout(pendant_head_sublayout)
+        pendant_layout.addWidget(CardSeparator())
+        pendant_body = TreeWidget(pendant_panel)
+        pendant_layout.addWidget(pendant_body)
+        sublayout_top.addWidget(pendant_edit_button)
+        layout.addLayout(sublayout_top)
+
+        return layer_widget
 
     def _create_command_bar_actions(self) -> list[Action]:
         actions = list()
 
-        add_new = Action(FIF.ADD, AppText.CB_ADD_NEW_PUCLASS)
+        add_new = Action(FIF.ADD, AT.CB_ADD_NEW_PUCLASS)
         add_new.triggered.connect(self._CB_add_new_puclass)
         actions.append(add_new)
 
-        delete_puclass = Action(FIF.DELETE, AppText.CB_DELETE_PUCLASS)
+        delete_puclass = Action(FIF.DELETE, AT.CB_DELETE_PUCLASS)
         delete_puclass.triggered.connect(self._CB_delete_puclass)
         actions.append(delete_puclass)
 
-        edit_puclass = Action(FIF.EDIT, AppText.CB_EDIT_PUCLASS)
+        edit_puclass = Action(FIF.EDIT, AT.CB_EDIT_PUCLASS)
         edit_puclass.triggered.connect(self._CB_edit_puclass)
         actions.append(edit_puclass)
 
-        set_scale = Action(FIF.IOT, AppText.CB_EDIT_SCALE)
+        set_scale = Action(FIF.IOT, AT.CB_EDIT_SCALE)
         set_scale.triggered.connect(self._CB_edit_scale)
         actions.append(set_scale)
 
@@ -241,6 +298,14 @@ class PUClassInfoBox(ElevatedCardWidget):
             text=f'({code}-{section} {name})', parent=self)
         layout.addWidget(description)
 
+
+class PUClassDescriptorBox(CardWidget):
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        title = TitleLabel()
+
+
 class NewClassInterface(MessageBoxBase):
 
     SGsearch_for_puclass = pyqtSignal(str)
@@ -259,10 +324,10 @@ class NewClassInterface(MessageBoxBase):
     def _init_UI(self) -> None:
         # Search block
         sub_layout1 = QHBoxLayout()
-        search_label = CaptionLabel(text=AppText.NC_SEARCH)
+        search_label = CaptionLabel(text=AT.NC_SEARCH)
         self.search_linedit = LineEdit(self)
         self.search_linedit.setClearButtonEnabled(True)
-        self.search_linedit.setPlaceholderText(AppText.NC_SEARCH_PLACEHOLDER)
+        self.search_linedit.setPlaceholderText(AT.NC_SEARCH_PLACEHOLDER)
         sub_layout1.addWidget(search_label)
         sub_layout1.addWidget(self.search_linedit)
         self.viewLayout.addLayout(sub_layout1)
@@ -273,15 +338,15 @@ class NewClassInterface(MessageBoxBase):
 
         # Other parameters
         sub_layout2 = QHBoxLayout()
-        alias_label = CaptionLabel(text=AppText.NC_ALIAS)
+        alias_label = CaptionLabel(text=AT.NC_ALIAS)
         self.alias_linedit = LineEdit(self)
         self.alias_linedit.setClearButtonEnabled(True)
-        self.alias_linedit.setPlaceholderText(AppText.NC_ALIAS_PLACEHOLDER)
+        self.alias_linedit.setPlaceholderText(AT.NC_ALIAS_PLACEHOLDER)
         self.alias_linedit.setEnabled(False)
         self.alias_linedit.setMaxLength(10)
-        color_label = CaptionLabel(AppText.NC_COLOR)
+        color_label = CaptionLabel(AT.NC_COLOR)
         self.color_selector = ColorPickerButton(
-            QColor('#5010aaa2'), AppText.NC_COLOR_TITLE)
+            QColor('#5010aaa2'), AT.NC_COLOR_TITLE)
         self.color_selector.setEnabled(False)
         sub_layout2.addWidget(alias_label)
         sub_layout2.addWidget(self.alias_linedit)
@@ -290,9 +355,9 @@ class NewClassInterface(MessageBoxBase):
         self.viewLayout.addLayout(sub_layout2)
 
         # final text
-        self.yesButton.setText(AppText.NC_CONFIRM)
+        self.yesButton.setText(AT.NC_CONFIRM)
         self.yesButton.setEnabled(False)
-        self.cancelButton.setText(AppText.NC_CANCEL)
+        self.cancelButton.setText(AT.NC_CANCEL)
 
     def _connect_signals(self) -> None:
         self.search_linedit.returnPressed.connect(

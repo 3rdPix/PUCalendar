@@ -1,5 +1,6 @@
 from PyQt6.QtCore import QRectF
 from PyQt6.QtCore import Qt
+from PyQt6.QtCore import QEasingCurve
 from PyQt6.QtGui import QBrush
 from PyQt6.QtGui import QColor
 from PyQt6.QtGui import QLinearGradient
@@ -51,7 +52,7 @@ class HomeInterface(ScrollArea):
 
         self.widget_object = QWidget(parent=self)
         self.flow_layout = FlowLayout(parent=self.widget_object, needAni=True)
-        
+        self.flow_layout.ease = QEasingCurve.Type.InOutExpo
 
         self.init_content()
         self.flow_layout.addWidget(self.iBAgenda)

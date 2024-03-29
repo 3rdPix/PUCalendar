@@ -13,5 +13,9 @@
     "NC_color": "Color:",
     "NC_color_title": "Elige un color para identificar al ramo",
     "NC_confirm": "Confirmar",
-    "NC_cancel": "Cancelar" 
+    "NC_cancel": "Cancelar" ,
+    "descriptor_description": "Detalles y notas",
+    "descriptor_pendant": "Pendientes",
+    "descriptor_schedule": "Horario",
+    "descriptor_grades": "Calificaciones"
 }
