@@ -36,6 +36,7 @@ from qfluentwidgets import PrimaryToolButton
 from qfluentwidgets import TransparentToolButton
 from qfluentwidgets import PlainTextEdit
 from qfluentwidgets import TreeWidget
+from qfluentwidgets import FlipView
 from qfluentwidgets.components.widgets.card_widget import CardSeparator
 from qfluentwidgets.components.widgets.card_widget import CardWidget
 from qfluentwidgets.components.widgets.card_widget import ElevatedCardWidget
@@ -169,48 +170,44 @@ class MyPUClassesTab(QFrame):
         return all_puclasses_layer, all_puclasses_panel
 
     def _create_layer_3(self) -> QWidget:
-        layer_widget = QWidget(self.information_panel)
-        layout = QVBoxLayout(layer_widget)
+        self._layer_3 = QWidget(self.information_panel)
+        layout = QVBoxLayout(self._layer_3)
 
-        return_button = PrimaryToolButton(FIF.BACK_TO_WINDOW, parent=self)
-        layout.addWidget(return_button, Qt.AlignmentFlag.AlignRight)
+        return_button = PrimaryToolButton(FIF.RETURN, parent=self)
+        return_button_layout = QHBoxLayout()
+        return_button_layout.addWidget(TitleLabel('Nombre curso'))
+        return_button_layout.addStretch()
+        return_button_layout.addWidget(return_button)
+        layout.addLayout(return_button_layout)
 
         sublayout_top = QHBoxLayout()
         
-        description_panel = CardWidget(layer_widget)
-        description_layout = QVBoxLayout(description_panel)
-        description_title = TitleLabel(text=AT.DESCRIPTOR_DESCRIPTION, 
-                                       parent=description_panel)
-        description_edit_button = TransparentToolButton(
-            FIF.EDIT, parent=description_panel)
-        description_head_sublayout = QHBoxLayout()
-        description_head_sublayout.addWidget(description_title)
-        description_head_sublayout.addWidget(description_edit_button, 
-                                             Qt.AlignmentFlag.AlignRight)
-        description_layout.addLayout(description_head_sublayout)
-        description_layout.addWidget(CardSeparator())
-        description_body = PlainTextEdit(description_panel)
-        description_layout.addWidget(description_body)
+        description_panel = PUClassDescriptorBox(AT.DESCRIPTOR_DESCRIPTION, 
+                                                 PlainTextEdit(), 
+                                                 parent=self._layer_3)
         sublayout_top.addWidget(description_panel)
 
-        pendant_panel = CardWidget(layer_widget)
-        pendant_layout = QVBoxLayout(pendant_panel)
-        pendant_title = TitleLabel(text=AT.DESCRIPTOR_PENDANT,
-                                   parent=pendant_panel)
-        pendant_edit_button = TransparentToolButton(
-            FIF.EDIT, parent=pendant_panel)
-        pendant_head_sublayout = QHBoxLayout()
-        pendant_head_sublayout.addWidget(pendant_title)
-        pendant_head_sublayout.addWidget(pendant_edit_button,
-                                         Qt.AlignmentFlag.AlignRight)
-        pendant_layout.addLayout(pendant_head_sublayout)
-        pendant_layout.addWidget(CardSeparator())
-        pendant_body = TreeWidget(pendant_panel)
-        pendant_layout.addWidget(pendant_body)
-        sublayout_top.addWidget(pendant_edit_button)
+        pendant_panel = PUClassDescriptorBox(AT.DESCRIPTOR_PENDANT,
+                                             TreeWidget(),
+                                             parent=self._layer_3)
+        sublayout_top.addWidget(pendant_panel)
         layout.addLayout(sublayout_top)
 
-        return layer_widget
+        
+        sublayout_bot = QHBoxLayout()
+        
+        schedule_panel = PUClassDescriptorBox(AT.DESCRIPTOR_SCHEDULE,
+                                              FlipView(Qt.Orientation.Horizontal),
+                                              parent=self._layer_3)
+        sublayout_bot.addWidget(schedule_panel)
+
+        grades_panel = PUClassDescriptorBox(AT.DESCRIPTOR_GRADES,
+                                            ColorPickerButton(QColor(241), 'color'),
+                                            parent=self._layer_3)
+        sublayout_bot.addWidget(grades_panel)
+        layout.addLayout(sublayout_bot)
+
+        return self._layer_3
 
     def _create_command_bar_actions(self) -> list[Action]:
         actions = list()
@@ -276,6 +273,23 @@ class MyPUClassesTab(QFrame):
         self.SGselect_newclass.emit(index, alias, color)
 
 
+class PUClassDescriptorBox(CardWidget):
+
+    def __init__(self, title: str, body: QWidget, parent=None) -> None:
+        super().__init__(parent)
+        self.setMinimumSize(200, 150)
+        self_layout = QVBoxLayout(self)
+        self_title = SubtitleLabel(text=title, parent=self)
+        edit_button = TransparentToolButton(FIF.EDIT, parent=self)
+        head_sublayout = QHBoxLayout()
+        head_sublayout.addWidget(self_title)
+        head_sublayout.addWidget(edit_button, Qt.AlignmentFlag.AlignRight)
+        self_layout.addLayout(head_sublayout)
+        self_layout.addWidget(CardSeparator())
+        self_layout.addWidget(body)
+
+
+
 class PUClassInfoBox(ElevatedCardWidget):
     """Flotant box to be shown in all_puclasses_panel"""
 
@@ -297,14 +311,6 @@ class PUClassInfoBox(ElevatedCardWidget):
         description =   CaptionLabel(
             text=f'({code}-{section} {name})', parent=self)
         layout.addWidget(description)
-
-
-class PUClassDescriptorBox(CardWidget):
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        title = TitleLabel()
-
 
 class NewClassInterface(MessageBoxBase):
 
