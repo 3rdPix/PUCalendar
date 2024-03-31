@@ -25,6 +25,7 @@ from qfluentwidgets import PrimaryToolButton
 from qfluentwidgets import ScrollArea
 from qfluentwidgets import SmoothScrollArea
 from qfluentwidgets import SubtitleLabel
+from qfluentwidgets import CaptionLabel
 from qfluentwidgets.components.widgets.card_widget import CardSeparator
 
 
@@ -32,7 +33,8 @@ class InfoBox(CardWidget):
 
     def __init__(self, titulo_seccion: str, parent: QWidget=None) -> None:
         super().__init__(parent)
-        self.titulo = QLabel(titulo_seccion)
+        self.setMinimumSize(170, 200)
+        self.titulo = CaptionLabel(titulo_seccion)
         self.separador = CardSeparator()
 
         lay = QVBoxLayout()

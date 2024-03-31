@@ -28,7 +28,7 @@ from qfluentwidgets import TeachingTipTailPosition
 from qfluentwidgets import TeachingTipView
 from qfluentwidgets import Theme
 from window import AgendaInterface
-from window import CalendarInterface
+from window import CalendarTab
 from window import MyPUClassesTab
 from window.home import HomeInterface
 
@@ -55,7 +55,7 @@ class MainWindow(MSFluentWindow):
         self.home_interface = HomeInterface(self)
         self.agenda_interface = AgendaInterface('Agenda', self)
         self.courses_interface = MyPUClassesTab(self)
-        self.calendar_interface = CalendarInterface('Calendario', self)
+        self.calendar_interface = CalendarTab('Calendario', self)
 
     def init_navigation(self) -> None:
         self.addSubInterface(self.home_interface, FIF.HOME, 'Inicio', FIF.HOME_FILL)
