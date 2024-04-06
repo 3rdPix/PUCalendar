@@ -6,11 +6,13 @@ from PyQt6.QtCore import QAbstractAnimation
 from PyQt6.QtCore import QPropertyAnimation
 from PyQt6.QtCore import Qt
 from PyQt6.QtCore import QEasingCurve
+from PyQt6.QtCore import QEvent
 from PyQt6.QtGui import QColor
 from PyQt6.QtGui import QFontMetrics
 from PyQt6.QtGui import QKeyEvent
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtGui import QScreen
+from PyQt6.QtGui import QWheelEvent
 from PyQt6.QtWidgets import QFrame
 from PyQt6.QtWidgets import QGraphicsOpacityEffect
 from PyQt6.QtWidgets import QHBoxLayout
@@ -37,9 +39,11 @@ from qfluentwidgets import TransparentToolButton
 from qfluentwidgets import PlainTextEdit
 from qfluentwidgets import TreeWidget
 from qfluentwidgets import FlipView
+from qfluentwidgets import PopUpAniStackedWidget
 from qfluentwidgets.components.widgets.card_widget import CardSeparator
 from qfluentwidgets.components.widgets.card_widget import CardWidget
 from qfluentwidgets.components.widgets.card_widget import ElevatedCardWidget
+from components.variant import LoopStackedWidget
 
 
 class OpacityAniStackedWidget(QStackedWidget):
@@ -101,6 +105,7 @@ class MyPUClassesTab(QFrame):
 
     SGsearch_for_puclass: pyqtSignal = pyqtSignal(str)
     SGselect_newclass: pyqtSignal = pyqtSignal(int, str, str)
+    SGpuclass_clicked: pyqtSignal = pyqtSignal(str)
 
     def __init__(self, parent=None):
         super().__init__(parent=parent)
@@ -108,7 +113,6 @@ class MyPUClassesTab(QFrame):
         self._init_attr()
         self._init_UI()
         self._connect_SG()
-        self.information_panel.setCurrentIndex(2)
 
     #########################################################
     ###                     Handles                       ###
@@ -143,6 +147,7 @@ class MyPUClassesTab(QFrame):
         # panel 3
         self.information_panel.addWidget(self._create_layer_3())
 
+
     def _create_layer_1(self) -> QWidget:
         no_puclass_layer = QWidget(self.information_panel)
         icon = QLabel(no_puclass_layer)
@@ -175,10 +180,13 @@ class MyPUClassesTab(QFrame):
 
         return_button = PrimaryToolButton(FIF.RETURN, parent=self)
         return_button_layout = QHBoxLayout()
-        return_button_layout.addWidget(TitleLabel('Nombre curso'))
+        return_button_layout.addWidget(title := TitleLabel('Nombre curso'))
         return_button_layout.addStretch()
         return_button_layout.addWidget(return_button)
         layout.addLayout(return_button_layout)
+
+        setattr(self._layer_3, 'puclass_title', title)
+        setattr(self._layer_3, 'return_button', return_button)
 
         sublayout_top = QHBoxLayout()
         
@@ -248,6 +256,9 @@ class MyPUClassesTab(QFrame):
         
         self.newclass_search_interface.SGselect_puclass.connect(
             self.send_newclass_selection)
+        
+        self._layer_3.return_button.clicked.connect(
+            self.return_to_layer_2)
 
     #########################################################
     ###                     Listeners                     ###
@@ -261,6 +272,16 @@ class MyPUClassesTab(QFrame):
     def show_search_results(self, results: list[dict]) -> None:
         self.newclass_search_interface.show_search_result(results)
 
+    def puclass_infoBox_clicked(self, _id: int) -> None:
+        self.SGpuclass_clicked.emit(_id)
+        self.information_panel.setCurrentIndex(2)
+
+    def show_puclass_panel(self, info: dict) -> None:
+        self._layer_3.puclass_title.setText(info.get('name'))
+
+    def return_to_layer_2(self) -> None:
+        self.information_panel.setCurrentIndex(1)
+
     #########################################################
     ###                     Senders                       ###
     #########################################################
@@ -273,7 +294,11 @@ class MyPUClassesTab(QFrame):
         self.SGselect_newclass.emit(index, alias, color)
 
 
+    
+
+
 class PUClassDescriptorBox(CardWidget):
+
 
     def __init__(self, title: str, body: QWidget, parent=None) -> None:
         super().__init__(parent)
@@ -288,10 +313,14 @@ class PUClassDescriptorBox(CardWidget):
         self_layout.addWidget(CardSeparator())
         self_layout.addWidget(body)
 
+    
+
 
 
 class PUClassInfoBox(ElevatedCardWidget):
     """Flotant box to be shown in all_puclasses_panel"""
+
+    _clicked = pyqtSignal(str)
 
     def __init__(self, alias: str, color: str,
                  name: str, code: str, section: int, parent=None, **kwargs):
@@ -311,6 +340,11 @@ class PUClassInfoBox(ElevatedCardWidget):
         description =   CaptionLabel(
             text=f'({code}-{section} {name})', parent=self)
         layout.addWidget(description)
+        self._id = kwargs.get('nrc')
+
+        self.clicked.connect(lambda: self._clicked.emit(self._id))
+
+    
 
 class NewClassInterface(MessageBoxBase):
 

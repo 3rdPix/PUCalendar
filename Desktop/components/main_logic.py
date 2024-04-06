@@ -32,6 +32,7 @@ class MainLogic(QObject):
     SGpuclass_search_result: pyqtSignal = pyqtSignal(list)
     SGpuclass_creation_status: pyqtSignal = pyqtSignal(bool, str)
     SGloaded_puclass: pyqtSignal = pyqtSignal(dict)
+    SGshow_puclass_panel: pyqtSignal = pyqtSignal(dict)
 
     def __init__(self) -> None:
         super().__init__()
@@ -79,7 +80,9 @@ class MainLogic(QObject):
         self.create_new_puclass_from_web(
             self.current_search_result[index], alias, color)
 
-
+    def RQpuclass_clicked(self, _id: str) -> None:
+        self.SGshow_puclass_panel.emit(self.puclasses.get(_id).info)
+        pass
 
 
 
@@ -90,7 +93,7 @@ class MainLogic(QObject):
     def create_attributes(self) -> None:
         self.week: PUCWeek = PUCWeek(self.parameters.get('block_params'))
         self.db: Db = Db(Paths.get('session_db'))
-        self.puclasses: dict = {}
+        self.puclasses: dict[str, PUClass] = {}
         self.current_search_result: list[dict] | None = None
 
     def create_new_puclass_from_web(self, web_dict: dict,

@@ -17,5 +17,6 @@
     "descriptor_description": "Detalles y notas",
     "descriptor_pendant": "Pendientes",
     "descriptor_schedule": "Horario",
-    "descriptor_grades": "Calificaciones"
+    "descriptor_grades": "Calificaciones",
+    "CalBar_search_line": "Buscar actividad"
 }

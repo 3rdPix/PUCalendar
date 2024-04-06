@@ -52,7 +52,7 @@ class PUCalendar(QApplication):
         # window
         self.mainWindow = MainWindow()
 
-        self.connect_signals()
+        self.connect_courses_tab_signals()
 
         # self.init_game_music()
         self.mainWindow.show()
@@ -67,7 +67,7 @@ class PUCalendar(QApplication):
         self.music_player.setSource(QUrl.fromLocalFile('gains.mp3'))
         self.music_player.play()
 
-    def connect_signals(self) -> None:
+    def connect_courses_tab_signals(self) -> None:
         
         # search for puclass
         self.mainWindow.courses_interface.SGsearch_for_puclass.connect(
@@ -84,3 +84,11 @@ class PUCalendar(QApplication):
         # receive creation
         self.logic.SGloaded_puclass.connect(
             self.mainWindow.courses_interface.add_new)
+
+        # infobox clicked
+        self.mainWindow.courses_interface.SGpuclass_clicked.connect(
+            self.logic.RQpuclass_clicked)
+        
+        # puclass panel info
+        self.logic.SGshow_puclass_panel.connect(
+            self.mainWindow.courses_interface.show_puclass_panel)
