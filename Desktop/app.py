@@ -74,7 +74,7 @@ class PUCalendar(QApplication):
             self.logic.RQsearch_for_puclass)
         
         # send search results
-        self.logic.SGpuclass_search_result.connect(
+        self.logic.SG_CourT_search_result.connect(
             self.mainWindow.courses_interface.show_search_results)
         
         # send newclass selection
@@ -82,7 +82,7 @@ class PUCalendar(QApplication):
             self.logic.RQcreate_new_puclass)
         
         # receive creation
-        self.logic.SGloaded_puclass.connect(
+        self.logic.SG_CourT_add_card_to_allpuclass_panel.connect(
             self.mainWindow.courses_interface.add_new)
 
         # infobox clicked
@@ -90,5 +90,5 @@ class PUCalendar(QApplication):
             self.logic.RQpuclass_clicked)
         
         # puclass panel info
-        self.logic.SGshow_puclass_panel.connect(
+        self.logic.SG_CourT_show_single_puclass_panel.connect(
             self.mainWindow.courses_interface.show_puclass_panel)

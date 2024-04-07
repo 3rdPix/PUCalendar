@@ -264,8 +264,8 @@ class MyPUClassesTab(QFrame):
     ###                     Listeners                     ###
     #########################################################
 
-    def add_new(self, puclass: dict) -> None:
-        infobox = PUClassInfoBox(**puclass)
+    def add_new(self, alias, color, name, code, section) -> None:
+        infobox = PUClassInfoBox(alias, color, name, code, section)
         self.all_puclasses_panel.addWidget(infobox)
         self.information_panel.setCurrentIndex(1)
 
