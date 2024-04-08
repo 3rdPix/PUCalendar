@@ -1,14 +1,10 @@
 import datetime
 import json
-from os.path import exists
 
 from components.course import PUClass
-from components.course import search_for_puclasses
 from components.database import PUCalendarDatabaseHandler as Db
 from components.paths import Paths
 from components.schedule import PUCWeek
-from PyQt6.QtCore import pyqtSignal
-from PyQt6.QtCore import QObject
 from components import SGMainLogic
 from controllers import CoursesTabLogic
 

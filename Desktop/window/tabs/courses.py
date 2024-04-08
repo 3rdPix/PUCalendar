@@ -1,4 +1,3 @@
-from components.course import PUClass
 from components.paths import Paths
 from components.text import AppText as AT
 from PyQt6.QtCore import QRect, pyqtSignal
@@ -6,18 +5,12 @@ from PyQt6.QtCore import QAbstractAnimation
 from PyQt6.QtCore import QPropertyAnimation
 from PyQt6.QtCore import Qt
 from PyQt6.QtCore import QEasingCurve
-from PyQt6.QtCore import QEvent
 from PyQt6.QtGui import QColor
-from PyQt6.QtGui import QFontMetrics
-from PyQt6.QtGui import QKeyEvent
 from PyQt6.QtGui import QPixmap
-from PyQt6.QtGui import QScreen
-from PyQt6.QtGui import QWheelEvent
 from PyQt6.QtWidgets import QFrame
 from PyQt6.QtWidgets import QGraphicsOpacityEffect
 from PyQt6.QtWidgets import QHBoxLayout
 from PyQt6.QtWidgets import QLabel
-from PyQt6.QtWidgets import QListWidgetItem
 from PyQt6.QtWidgets import QStackedWidget
 from PyQt6.QtWidgets import QVBoxLayout
 from PyQt6.QtWidgets import QWidget
@@ -31,7 +24,6 @@ from qfluentwidgets import LineEdit
 from qfluentwidgets import ListWidget
 from qfluentwidgets import MessageBoxBase
 from qfluentwidgets import ScrollArea
-from qfluentwidgets import setFont
 from qfluentwidgets import SubtitleLabel
 from qfluentwidgets import TitleLabel
 from qfluentwidgets import PrimaryToolButton
@@ -39,11 +31,9 @@ from qfluentwidgets import TransparentToolButton
 from qfluentwidgets import PlainTextEdit
 from qfluentwidgets import TreeWidget
 from qfluentwidgets import FlipView
-from qfluentwidgets import PopUpAniStackedWidget
 from qfluentwidgets.components.widgets.card_widget import CardSeparator
 from qfluentwidgets.components.widgets.card_widget import CardWidget
 from qfluentwidgets.components.widgets.card_widget import ElevatedCardWidget
-from components.variant import LoopStackedWidget
 
 
 class OpacityAniStackedWidget(QStackedWidget):
@@ -294,9 +284,6 @@ class MyPUClassesTab(QFrame):
         self.SGselect_newclass.emit(index, alias, color)
 
 
-    
-
-
 class PUClassDescriptorBox(CardWidget):
 
 
@@ -314,9 +301,6 @@ class PUClassDescriptorBox(CardWidget):
         self_layout.addWidget(body)
 
     
-
-
-
 class PUClassInfoBox(ElevatedCardWidget):
     """Flotant box to be shown in all_puclasses_panel"""
 
@@ -344,7 +328,6 @@ class PUClassInfoBox(ElevatedCardWidget):
 
         self.clicked.connect(lambda: self._clicked.emit(self._id))
 
-    
 
 class NewClassInterface(MessageBoxBase):
 
