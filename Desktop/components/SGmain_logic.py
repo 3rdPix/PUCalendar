@@ -1,4 +1,5 @@
-from PyQt6.QtCore import QObject, pyqtSignal
+from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtCore import QObject
 
 
 class SGMainLogic(QObject):

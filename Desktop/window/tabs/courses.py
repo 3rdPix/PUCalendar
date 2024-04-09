@@ -1,10 +1,10 @@
 from components.paths import Paths
 from components.text import AppText as AT
-from PyQt6.QtCore import QRect, pyqtSignal
+from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtCore import QAbstractAnimation
+from PyQt6.QtCore import QEasingCurve
 from PyQt6.QtCore import QPropertyAnimation
 from PyQt6.QtCore import Qt
-from PyQt6.QtCore import QEasingCurve
 from PyQt6.QtGui import QColor
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import QFrame
@@ -18,19 +18,19 @@ from qfluentwidgets import Action
 from qfluentwidgets import CaptionLabel
 from qfluentwidgets import ColorPickerButton
 from qfluentwidgets import CommandBar
+from qfluentwidgets import FlipView
 from qfluentwidgets import FlowLayout
 from qfluentwidgets import FluentIcon as FIF
 from qfluentwidgets import LineEdit
 from qfluentwidgets import ListWidget
 from qfluentwidgets import MessageBoxBase
+from qfluentwidgets import PlainTextEdit
+from qfluentwidgets import PrimaryToolButton
 from qfluentwidgets import ScrollArea
 from qfluentwidgets import SubtitleLabel
 from qfluentwidgets import TitleLabel
-from qfluentwidgets import PrimaryToolButton
 from qfluentwidgets import TransparentToolButton
-from qfluentwidgets import PlainTextEdit
 from qfluentwidgets import TreeWidget
-from qfluentwidgets import FlipView
 from qfluentwidgets.components.widgets.card_widget import CardSeparator
 from qfluentwidgets.components.widgets.card_widget import CardWidget
 from qfluentwidgets.components.widgets.card_widget import ElevatedCardWidget
@@ -435,4 +435,4 @@ class NewClassInterface(MessageBoxBase):
         
     def show_search_result(self, result_list: list[str]) -> None:
         self.search_result_view.clear()
-        self.search_result_view.addItems(result_list)    
+        self.search_result_view.addItems(result_list)

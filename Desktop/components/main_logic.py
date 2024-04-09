@@ -1,11 +1,11 @@
 import datetime
 import json
 
+from components import SGMainLogic
 from components.course import PUClass
 from components.database import PUCalendarDatabaseHandler as Db
 from components.paths import Paths
 from components.schedule import PUCWeek
-from components import SGMainLogic
 from controllers import CoursesTabLogic
 
 # Temporalmente estoy conectando a la base de datos directamente

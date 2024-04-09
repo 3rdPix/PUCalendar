@@ -1,10 +1,11 @@
 from typing import List
-from PyQt6 import QtMultimedia
-from PyQt6.QtCore import QUrl
-from PyQt6.QtWidgets import QApplication
+
 from components.main_logic import MainLogic
 from components.paths import Paths
 from components.text import AppText
+from PyQt6 import QtMultimedia
+from PyQt6.QtCore import QUrl
+from PyQt6.QtWidgets import QApplication
 from window import MainWindow
 
 class PUCalendar(QApplication):

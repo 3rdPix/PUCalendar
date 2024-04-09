@@ -1,5 +1,6 @@
-from .course import search_for_puclasses, PUClass
+from .course import PUClass
+from .course import search_for_puclasses
 from .database import PUCalendarDatabaseHandler
 from .paths import Paths
-from .text import AppText
 from .SGmain_logic import SGMainLogic
+from .text import AppText

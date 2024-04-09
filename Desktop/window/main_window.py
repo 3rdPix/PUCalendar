@@ -10,10 +10,11 @@ from qfluentwidgets import PushButton
 from qfluentwidgets import TeachingTip
 from qfluentwidgets import TeachingTipTailPosition
 from qfluentwidgets import TeachingTipView
-from .tabs import MyPUClassesTab
+
 from .tabs import AgendaInterface
 from .tabs import CalendarTab
 from .tabs import HomeInterface
+from .tabs import MyPUClassesTab
 
 class MainWindow(MSFluentWindow):
 

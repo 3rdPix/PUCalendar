@@ -1,21 +1,17 @@
-from PyQt6.QtCore import Qt
-from PyQt6.QtGui import QImage, QPixmap
-from PyQt6.QtWidgets import QFrame
-from PyQt6.QtWidgets import QLabel
-from PyQt6.QtWidgets import QHBoxLayout
-from PyQt6.QtWidgets import QWidget
-from PyQt6.QtWidgets import QGridLayout
-from PyQt6.QtWidgets import QVBoxLayout
-from qfluentwidgets import setFont
-from qfluentwidgets import SubtitleLabel
-from qfluentwidgets import DisplayLabel
-from qfluentwidgets import FlipView
-from qfluentwidgets import CaptionLabel
-from qfluentwidgets import CommandBar
-from qfluentwidgets import LineEdit
-from qfluentwidgets.components.widgets.card_widget import CardSeparator
 from typing import Protocol
+
 from components.text import AppText
+from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import QFrame
+from PyQt6.QtWidgets import QGridLayout
+from PyQt6.QtWidgets import QLabel
+from PyQt6.QtWidgets import QVBoxLayout
+from PyQt6.QtWidgets import QWidget
+from qfluentwidgets import CommandBar
+from qfluentwidgets import DisplayLabel
+from qfluentwidgets import LineEdit
+from qfluentwidgets import SubtitleLabel
+from qfluentwidgets.components.widgets.card_widget import CardSeparator
 
 
 class CalendarTab(QFrame):

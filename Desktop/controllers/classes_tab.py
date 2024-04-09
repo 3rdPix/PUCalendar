@@ -1,7 +1,9 @@
-from PyQt6.QtCore import QObject
-from PyQt6.QtCore import pyqtBoundSignal
-from components import PUClass, PUCalendarDatabaseHandler, search_for_puclasses, Paths
 import datetime
+
+from components import PUClass
+from components import search_for_puclasses
+from PyQt6.QtCore import pyqtBoundSignal
+from PyQt6.QtCore import QObject
 
 def get_year_and_value() -> tuple[str]:
     current_month = datetime.datetime.now().month
@@ -73,4 +75,3 @@ class CoursesTabLogic(QObject):
         self.SG_CourT_single_puclass_information.emit(
             self.puclasses.get(_id).info)
         self.SG_CourT_show_single_puclass_panel.emit()
-        
