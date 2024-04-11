@@ -46,6 +46,7 @@ class CoursesTabLogic(QObject):
         
     def RQpuclass_clicked(self, _id: str) -> None:
         """Receives request to go to course panel after selecting a course"""
+        self.load_single_course_panel(_id)
 
     #########################################################
     ###                     Handles                       ###
@@ -62,14 +63,16 @@ class CoursesTabLogic(QObject):
     def create_new_puclass_from_web(self, web_dict: dict,
                                   alias: str, color: str) -> None:
         """Handles the request to create new class from web"""
-        if nrc := web_dict.get('nrc') in self.puclasses.keys():
+        nrc = web_dict.get('nrc')
+        if nrc in self.puclasses.keys():
             return self.SG_CourT_newpuclass_creation_status.emit(False, 'already')
-        self.puclasses[nrc] = (puclass := PUClass(alias, color, **web_dict))
+        puclass = PUClass(alias, color, **web_dict)
+        self.puclasses[nrc] = puclass
         self.SG_CourT_newpuclass_creation_status.emit(True, 'OK')
         self.SG_CourT_add_card_to_allpuclass_panel.emit(
             puclass.info.get('alias'), puclass.info.get('color'),
             puclass.info.get('name'), puclass.info.get('code'),
-            puclass.info.get('section'))
+            int(puclass.info.get('section')), nrc)
 
     def load_single_course_panel(self, _id: str) -> None:
         self.SG_CourT_single_puclass_information.emit(

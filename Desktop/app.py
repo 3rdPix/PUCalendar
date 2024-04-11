@@ -63,6 +63,10 @@ class PUCalendar(QApplication):
         self.mainWindow.courses_interface.SGpuclass_clicked.connect(
             self.logic.RQpuclass_clicked)
         
-        # puclass panel info
+        # puclass panel show
         self.logic.SG_CourT_show_single_puclass_panel.connect(
             self.mainWindow.courses_interface.show_puclass_panel)
+        
+        # puclass panel info
+        self.logic.SG_CourT_single_puclass_information.connect(
+            self.mainWindow.courses_interface.receive_single_puclass_info)

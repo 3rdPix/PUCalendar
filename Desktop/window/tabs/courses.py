@@ -1,3 +1,6 @@
+from typing import Protocol
+
+from components import NotImplemented
 from components.paths import Paths
 from components.text import AppText as AT
 from PyQt6.QtCore import pyqtSignal
@@ -164,18 +167,31 @@ class MyPUClassesTab(QFrame):
         all_puclasses_layer.setWidget(widget_obejct)
         return all_puclasses_layer, all_puclasses_panel
 
+    class Layer3(Protocol):
+        _title_widget: QLabel
+        title: property
+
+        def title_getter(self) -> QLabel: ...
+        def title_setter(self, text: str) -> None: ...
+
+
     def _create_layer_3(self) -> QWidget:
-        self._layer_3 = QWidget(self.information_panel)
+        self._layer_3: self.Layer3 = QWidget(self.information_panel)
         layout = QVBoxLayout(self._layer_3)
 
         return_button = PrimaryToolButton(FIF.RETURN, parent=self)
         return_button_layout = QHBoxLayout()
-        return_button_layout.addWidget(title := TitleLabel('Nombre curso'))
+        title = TitleLabel('Nombre currso')
+        return_button_layout.addWidget(title)
         return_button_layout.addStretch()
         return_button_layout.addWidget(return_button)
         layout.addLayout(return_button_layout)
 
-        setattr(self._layer_3, 'puclass_title', title)
+        def setTitle(cls: self.Layer3, text: str) -> None:
+            cls._title_widget.setText(text)
+        
+        setattr(self._layer_3, '_title_widget', title)
+        setattr(self._layer_3, 'setTitle', setTitle)
         setattr(self._layer_3, 'return_button', return_button)
 
         sublayout_top = QHBoxLayout()
@@ -254,23 +270,27 @@ class MyPUClassesTab(QFrame):
     ###                     Listeners                     ###
     #########################################################
 
-    def add_new(self, alias, color, name, code, section) -> None:
-        infobox = PUClassInfoBox(alias, color, name, code, section)
+    def add_new(self, alias: str, color: str, name: str,
+                code: str, section: int, nrc: str) -> None:
+        infobox = PUClassInfoBox(alias, color, name, code, section, nrc)
+        infobox._clicked.connect(self.puclass_infoBox_clicked)
         self.all_puclasses_panel.addWidget(infobox)
         self.information_panel.setCurrentIndex(1)
 
     def show_search_results(self, results: list[dict]) -> None:
         self.newclass_search_interface.show_search_result(results)
 
-    def puclass_infoBox_clicked(self, _id: int) -> None:
+    def puclass_infoBox_clicked(self, _id: str) -> None:
         self.SGpuclass_clicked.emit(_id)
-        self.information_panel.setCurrentIndex(2)
 
-    def show_puclass_panel(self, info: dict) -> None:
-        self._layer_3.puclass_title.setText(info.get('name'))
+    def show_puclass_panel(self) -> None:
+        self.information_panel.setCurrentIndex(2)
 
     def return_to_layer_2(self) -> None:
         self.information_panel.setCurrentIndex(1)
+
+    def receive_single_puclass_info(self, info: dict) -> None:
+        raise NotImplemented
 
     #########################################################
     ###                     Senders                       ###
@@ -307,7 +327,7 @@ class PUClassInfoBox(ElevatedCardWidget):
     _clicked = pyqtSignal(str)
 
     def __init__(self, alias: str, color: str,
-                 name: str, code: str, section: int, parent=None, **kwargs):
+                 name: str, code: str, section: int, nrc: str, parent=None):
         super().__init__(parent)
         # self.setFixedSize(200, 200)
         layout = QVBoxLayout(self)
@@ -324,7 +344,7 @@ class PUClassInfoBox(ElevatedCardWidget):
         description =   CaptionLabel(
             text=f'({code}-{section} {name})', parent=self)
         layout.addWidget(description)
-        self._id = kwargs.get('nrc')
+        self._id = nrc
 
         self.clicked.connect(lambda: self._clicked.emit(self._id))
 

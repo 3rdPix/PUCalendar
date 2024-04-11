@@ -10,4 +10,4 @@ class SGMainLogic(QObject):
     SG_CourT_show_single_puclass_panel: pyqtSignal = pyqtSignal()
     SG_CourT_single_puclass_information: pyqtSignal = pyqtSignal(dict)
     SG_CourT_newpuclass_creation_status: pyqtSignal = pyqtSignal(bool, str)
-    SG_CourT_add_card_to_allpuclass_panel: pyqtSignal = pyqtSignal(str, str, str, str, int)
+    SG_CourT_add_card_to_allpuclass_panel: pyqtSignal = pyqtSignal(str, str, str, str, int, str)
